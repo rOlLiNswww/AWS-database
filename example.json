@@ -1,0 +1,272 @@
+{
+    "product_code": "BB005",
+    "product_name": "Button Badge – Oval",
+    "related_product_code": null,
+    "product_is_discontinued": null,
+
+    "supplier_categories": {
+        "category1": "Events/Button Badges",
+        "category2": "",
+        "category3": null,
+        "category4": null
+    },
+    "short_description": null,
+    "full_description": "Made of tin metal with a pin on the back, 4 colour process image makes your logo brighter and eye catching, can be printed with individual names and numbers, one of the most popular and cost effective promotional items.",
+    "tag": "full-colour",
+    "keywords": null,
+    "availbale_colour": "",
+    "available_branding": "Digital Print",
+    "colour_pms": null,
+
+    "specification":{
+    "specification_name1": "Item Size",
+    "specification_value1": "65mmW  x 45mmH",
+    "specification_name2": "",
+    "specification_value2": "",
+    "specification_name3": "",
+    "specification_value3": "",
+    "specification_name4": null,
+    "specification_value4": null
+    },
+
+    "packaging":{
+        "packaging_type": "Loose Packed",
+        "carton_length": "33",
+        "carton_width": "23",
+        "carton_height": "26",
+        "carton_weight": "10",
+        "carton_qty": "1000"
+    },
+
+    "shipping_cost":{
+        "shipping_au": 20,
+        "shipping_nz": 30
+    },
+
+    "images": [
+        {
+            "name": null,
+            "tag" : null,
+            "colour": null,
+            "url": "https://static.dexcollection.com.au/app/uploads/2022/02/BB005_1.jpg"
+        },
+        {
+            "name": null,
+            "tag" : null,
+            "colour": null,
+            "url": "https://static.dexcollection.com.au/app/uploads/2022/02/BB005_2.jpg"
+        }
+    ],
+
+    "available_leadtime":"",
+
+    "additional_info":{
+        "price_disclaimer": "All prices stated are GST exclusive. Less than minium quantities are available on local services only with surcharges applied - items on sale not included. All orders dispatched will be marked as ATL, unless otherwise requested. Delivery time between Dex to client is not included.",
+        "freight_disclaimer_au": "<h3 class=\"text-center text-danger\">$20 FLAT DELIVERY FEE</h3><p class=\"text-center\">(Standard road service only)</p><p class=\"text-danger font-weight-bold\">Important Information:</p><ul class=\"dash\"><li>Flat delivery fee is not applicable for any items on sale, custom indent, external stock or on special</li><li>All freight is shipped default as ATL. Otherwise, you must state clearly on your purchase order if you require signature for delivery</li><li>Split delivery fees are in addition to single consignment fees ($20.00 per additional location)</li><li>If Dex makes a booking on a client?s courier account, charges will apply ($20.00 per consignment)</li><li>Dex is reliant on external freight companies. We are not responsible for any delay, damage or loss caused by any freight forwarders</li><li>If signature is required and the first delivery attempt fails, the client has to pay for any re-delivery fees</li><li>Please clearly state receivers? details on your PO, such as specific address and contact number. Not like: Monash Clayton Campus</li><li>Standard sample charges still apply</li><li>Please quote with Dex for any other special freight services</li></ul><h5 class=\"text-center\">Freight Charges For Items on Special or On Sale Only</h5><div class=\"table-responsive\"><table class=\"table table-bordered\"><thead><tr class=\"table-primary\"><th scope=\"col\"></th><th scope=\"col\">MEL</th><th scope=\"col\">SDY</th><th scope=\"col\">ADL</th><th scope=\"col\">BNE</th><th scope=\"col\">PER</th><th scope=\"col\">DRW</th><th scope=\"col\">HBA</th><th scope=\"col\">CAN</th></tr></thead><tbody><tr><th>All Pens</th><td>$16 / $5</td><td>$16 / $7</td><td>$16 / $7</td><td>$16 / $9</td><td>$21 / $17</td><td>$26 / $20</td><td>$26 / $17</td><td>$16 / $9</td></tr><tr><th>NWB, Stress Shapes</th><td>$17 / $7</td><td>$17 / $9</td><td>$17 / $9</td><td>$21 / $12</td><td>$31 / $24</td><td>$36 / $30</td><td>$31 / $25</td><td>$21 / $10</td></tr><tr><th>Calico, Nylon Bags</th><td>$16 / $5</td><td>$16 / $7</td><td>$16 / $7</td><td>$16 / $9</td><td>$21 / $17</td><td>$26 / $20</td><td>$26 / $17</td><td>$16 / $9</td></tr><tr><th>All Other Bags</th><td>$16 / $6</td><td>$16 / $8</td><td>$16 / $8</td><td>$19 / $12</td><td>$26 / $22</td><td>$32 / $26</td><td>$29 / $22</td><td>$19 / $9</td></tr><tr><th>Key Rings</th><td>$17 / $6</td><td>$17 / $8</td><td>$17 / $8</td><td>$17 / $10</td><td>$22 / $18</td><td>$27 / $21</td><td>$27 / $18</td><td>$17 / $10</td></tr><tr><th>Drinkware</th><td>$16 / $6</td><td>$16 / $8</td><td>$16 / $8</td><td>$19 / $12</td><td>$26 / $22</td><td>$32 / $26</td><td>$29 / $22</td><td>$19 / $9</td></tr><tr><th>Technology</th><td>$16 / $6</td><td>$16 / $8</td><td>$16 / $8</td><td>$19 / $12</td><td>$26 / $22</td><td>$32 / $26</td><td>$29 / $22</td><td>$19 / $9</td></tr><tr><th>Umbrellas</th><td>$17 / $9</td><td>$17 / $9</td><td>$17 / $9</td><td>$20 / $14</td><td>$27 / $23</td><td>$33 / $27</td><td>$30 / $23</td><td>$20 / $10</td></tr><tr><th>Bath Mats</th><td>$17 / $8</td><td>$19 / $10</td><td>$19 / $10</td><td>$23 / $14</td><td>$36 / $29</td><td>$45 / $34</td><td>$39 / $29</td><td>$23 / $13</td></tr><tr><th>Office Items</th><td>$16 / $5</td><td>$16 / $7</td><td>$16 / $7</td><td>$16/ $9</td><td>$21 / $17</td><td>$26 / $20</td><td>$26 / $17</td><td>$16 / $9</td></tr></tbody></table></div><p><span class=\"text-danger col-md-3\">Price Format:</span><span class=\"col-md-9\">First Carton / Additional Cartons</span><span class=\"text-danger col-md-3\">Service:</span><span class=\"col-md-9\">Above freight price is for road express service only in metro locations. Please quote for other services</span><span class=\"text-danger col-md-3\">Remote Areas:</span><span class=\"col-md-9\">Please quote with us</span><span class=\"text-danger col-md-3\">10% GST:</span><span class=\"col-md-9\">Exclusive</span></p>",
+        "freight_disclaimer_nz": "<h3 class=\"text-center text-danger\">$30 FLAT DELIVERY FEE</h3><p class=\"text-center\">(Standard road service only)</p><p class=\"text-danger font-weight-bold\">Important Information:</p><ul class=\"dash\"><li>Flat delivery fee is not applicable for any items on sale, custom indent, external stock or on special</li><li>All freight is shipped default as ATL. Otherwise, you must state clearly on your purchase order if you require signature for delivery</li><li>Split delivery fees are in addition to single consignment fees ($30.00 per additional location)</li><li>If Dex makes a booking on a client?s courier account, charges will apply ($30.00 per consignment)</li><li>Dex is reliant on external freight companies. We are not responsible for any delay, damage or loss caused by any freight forwarders</li><li>If signature is required and the first delivery attempt fails, the client has to pay for any re-delivery fees</li><li>Please clearly state receivers? details on your PO, such as specific address and contact number. Not like: Monash Clayton Campus</li><li>Standard sample charges still apply</li><li>Please quote with Dex for any other special freight services</li></ul>",
+        "additional_info": "<ul><li>Current stocked item style and colour may vary slightly from image and line drawing shown.</li><li>If the product colour is critical, we strongly suggest you to order a sample.</li><li>PMS colours may not be exact and are used as a guide only.</li><li>Stock levels stated are approximate and may not be fully accurate. If require exact stock quantity, please request physical stock count prior to placing order.</li><li>We reserve the right to change product information and pricing without notice.</li></ul>",
+        "change_log_au": "<ul><li>14 March 2022 &#8211; Price Updated</li><li>1 July 2023 &#8211; Price Updated. Setup was $35 per colour/position</li><li>1 July 2023 &#8211; Price Updated. Flat Freight was $15 per location</li></ul>",
+        "change_log_nz": "<ul><li>23 January 2023 &#8211; Price Updated</li><li>1 July 2023 &#8211; Price Updated. Setup was $50 per colour/position</li><li>1 July 2023 &#8211; Price Updated. Flat Freight was $25 per location</li></ul>"
+    },
+
+    "files": [
+        {
+            "name": "ProductLineDrawing",
+            "tag": null,
+            "url": "https://static.dexcollection.com.au/app/uploads/2022/04/BB005_1.pdf"
+        },
+        {
+            "name": "ProductCertificate",
+            "tag": null,
+            "url": ""
+        }
+    ],
+
+    "inventory": {
+        "name": "",
+        "code":"",
+        "colour": {
+            "name":"",
+            "hex" :"",
+            "pms" :""
+        },
+        "onHand": "",
+        "onOrder": null,
+        "incoming": "",
+        "available_country":"",
+        "supplier_id":""
+    },
+
+
+    "lowest_price":{
+        "price":"",
+        "country":""
+    },
+
+
+
+    "decorations": [
+        {
+            "imprint_type":"Pad Print",
+            "imprint_area":"",
+            "available_country":"",
+            "AU" : {
+                "moq_surcharge": null,
+                "setup_new" : 40,
+                "setup_repeat" : 40,
+                "instruction" : "28 Days. 4CP Digital Print Setup",
+                "details" : [
+                    {
+                        "order": "",
+                        "leadtime" : "28 Working Days",
+                        "cost" : "",
+                        "maxqty" : 10000
+                    }
+                ]
+            },
+            "NZ" : {
+                "moq_surcharge": 123,
+                "setup_new" : 55,
+                "setup_repeat" : 55,
+                "instruction" : "28 Days. 4CP Digital Print Setup",
+                "details" : [
+                    {
+                        "order": "",
+                        "leadtime" : "28 Working Days",
+                        "cost" : "",
+                        "maxqty" : 10000
+                    }
+                ]
+            },
+
+            "supplier_id":""
+        },
+        {
+            "imprint_type":"Digital Direct",
+            "imprint_area":"",
+            "available_country":"",
+            "AU" : {
+                "moq_surcharge": null,
+                "setup_new" : 40,
+                "setup_repeat" : 40,
+                "instruction" : "28 Days. 4CP Digital Print Setup",
+                "details" : [
+                    {
+                        "leadtime" : "28 Working Days",
+                        "order": "",
+                        "cost" : "",
+                        "maxqty" : 10000
+                    }
+                ]
+            },
+            "NZ" : {
+                "moq_surcharge": 123,
+                "setup_new" : 55,
+                "setup_repeat" : 55,
+                "instruction" : "28 Days. 4CP Digital Print Setup",
+                "details" : [
+                    {
+                        "order": "",
+                        "leadtime" : "28 Working Days",
+                        "cost" : "",
+                        "maxqty" : 10000
+                    }
+                ]
+            },
+
+            "supplier_id":""
+        }
+    ],
+
+
+    "product_url": "https://www.dexcollection.com.au/products/button-badge-oval/",
+    "avaliable_country":"",
+
+    "pricing": {
+        "AU" : {
+            "description" : "28 Days Direct Digital Printed",
+            "instruction" : "",
+            "moq" : 100,
+            "moq_surcharge": null,
+            "lowest_price": null,
+            "qty1": 100,
+            "price1": 0.48,
+            "qty2": 250,
+            "price2": 0.47,
+            "qty3": 500,
+            "price3": 0.46,
+            "qty4": 1000,
+            "price4": 0.45,
+            "qty5": 2500,
+            "price5": 0.44,
+            "qty6": 5000,
+            "price6": 0.43,
+            "qty7": 10000,
+            "price7": 0.42,
+            "qty8": "",
+            "price8": "",
+            "qty9": "",
+            "price9": ""
+        },
+        "NZ" : {
+            "description" : "",
+            "instruction" : "",
+            "moq" : null,
+            "moq_surcharge": null,
+            "qty1" : null,
+            "price1" : null,
+            "qty2" : null,
+            "price2" : null,
+            "qty3" : null,
+            "price3" : null,
+            "qty4" : null,
+            "price4" : null,
+            "qty5" : null,
+            "price5" : null,
+            "qty6" : null,
+            "price6" : null,
+            "qty7" : null,
+            "price7" : null,
+            "qty8" : null,
+            "price8" : null,
+            "qty9" : null,
+            "price9" : null
+        }
+    },
+
+    "avaliable_moq":"",
+    "promotion_tag":"",
+    "categorychild_id": "Exhibitions & Events / Badge Holders",
+    
+    
+    "add_ons":{
+        "name":"",
+        "available_country":"",
+
+        "cost":{
+            "cost_au" : "",
+            "cost_nz" : ""
+        },
+
+        "supplier_id":"",
+
+        "decoration":{
+            "name" : "",
+            "size" : "",
+            "cost_au" : "",
+            "cost_nz" : "",
+            "instruction" : ""
+        }
+    },
+
+    "supplier_id":""
+    
+   
+    
+}
+
+    
+    
+    
+    
+    
