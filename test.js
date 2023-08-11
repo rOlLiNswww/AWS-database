@@ -9,6 +9,73 @@ fs.readFile('input.json', 'utf8', (err, data) => {
     try {
         const jsonData = JSON.parse(data);
 
+        const specification = {};
+        for (let i = 1; i <= 4; i++) {
+            const nameKey = `specification_name${i}`;
+            const valueKey = `specification_value${i}`;
+            if (jsonData[nameKey] !== undefined) {
+                specification[nameKey] = jsonData[nameKey];
+                specification[valueKey] = jsonData[valueKey] !== undefined ? jsonData[valueKey] : null;
+            }
+        }
+
+        jsonData['specification'] = specification;
+
+
+        const packaging = {
+            "packaging_type": jsonData["packaging_type"] || "",
+            "carton_length": jsonData["carton_length"] || "",
+            "carton_width": jsonData["carton_width"] || "",
+            "carton_height": jsonData["carton_height"] || "",
+            "carton_weight": jsonData["carton_weight"] || "",
+            "carton_qty": jsonData["carton_qty"] || ""
+        };
+        
+
+        jsonData['packaging'] = packaging;
+
+
+        const shippingCost = {
+            "shipping_au": jsonData["shipping_per_location_au"] || 0,
+            "shipping_nz": jsonData["shipping_per_location_nz"] || 0
+        };
+
+        jsonData['shipping_cost'] = shippingCost;
+
+        // Create images array with tag value added
+        const imagesWithTags = jsonData["images"].map(image => ({
+            "name": image["name"],
+            "tag": null,
+            "colour": image["colour"],
+            "url": image["url"]
+        }));
+
+        // Replace images array in output JSON
+        jsonData['images'] = imagesWithTags;
+
+
+        const hasAUPricing = jsonData.hasOwnProperty("pricetable_au");
+        const hasNZPricing = jsonData.hasOwnProperty("pricetable_nz");
+
+        // Determine available_leadtime based on pricing data
+        const availableLeadtime = hasNZPricing ? "AU, NZ" : (hasAUPricing ? "AU" : "");
+
+        // Add available_leadtime to the output JSON
+        jsonData['available_leadtime'] = availableLeadtime;
+
+
+        const additional_info = {
+            "price_disclaimer": jsonData["price_disclaimer"] || "",
+            "freight_disclaimer_au": jsonData["freight_disclaimer_au"] || "",
+            "freight_disclaimer_nz": jsonData["freight_disclaimer_nz"] || "",
+            "additional_info": jsonData["additional_info"] || "",
+            "change_log_au": jsonData["change_log_au"] || "",
+            "change_log_nz": jsonData["change_log_nz"] || ""
+        };
+
+        jsonData['additional_info'] = additional_info;
+
+
         // Define the order of keys to output
         const outputOrder = [
             "product_code",
@@ -19,7 +86,17 @@ fs.readFile('input.json', 'utf8', (err, data) => {
             "short_description",
             "full_description",
             "Promo",
-            "Feature"
+            "Feature",
+            "keywords",
+            "availbale_colour",
+            "available_branding",
+            "colour_pms",
+            "specification",
+            "packaging",
+            "shipping_cost",
+            "images",
+            "available_leadtime",
+            "additional_info"
             
             // Add more keys here if needed
         ];
@@ -58,6 +135,10 @@ fs.readFile('input.json', 'utf8', (err, data) => {
             jsonData["supplier_categories"] = jsonData["categories"];
         }
 
+        if (jsonData.hasOwnProperty('availbale_colour')) {
+            jsonData['colour_pms'] = jsonData['availbale_colour'];
+        }
+
         // Filter out entries not in the output order or with supplier_name/supplier_code keys
         const filteredData = {};
         for (const key of outputOrder) {
@@ -66,13 +147,14 @@ fs.readFile('input.json', 'utf8', (err, data) => {
             }
         }
 
+
         const outputData = JSON.stringify(filteredData, null, 4);
 
         fs.writeFile('output.json', outputData, 'utf8', (err) => {
             if (err) {
                 console.error('Error writing to output.json:', err);
             } else {
-                console.log('Selected data from input.json (excluding supplier_name and supplier_code) has been written to output.json');
+                console.log('data has been written to output.json');
             }
         });
     } catch (parseError) {
