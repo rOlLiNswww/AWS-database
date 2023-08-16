@@ -2,3 +2,4 @@ example.json
 input.json
 output.json
 .DS_Store
+node_modules

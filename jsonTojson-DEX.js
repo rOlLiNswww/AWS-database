@@ -58,10 +58,10 @@ fs.readFile('input.json', 'utf8', (err, data) => {
         const hasNZPricing = jsonData.hasOwnProperty("pricetable_nz");
 
         // Determine available_leadtime based on pricing data
-        const availableLeadtime = hasNZPricing ? "AU, NZ" : (hasAUPricing ? "AU" : "");
+        const availableCountry = hasNZPricing ? "AU, NZ" : (hasAUPricing ? "AU" : "");
 
         // Add available_leadtime to the output JSON
-        jsonData['available_leadtime'] = availableLeadtime;
+        jsonData['availableCountry'] = availableCountry;
 
 
         const additional_info = {
@@ -74,6 +74,111 @@ fs.readFile('input.json', 'utf8', (err, data) => {
         };
 
         jsonData['additional_info'] = additional_info;
+
+
+        const files = jsonData["files"].map(files => {
+            let tag = null;
+            if (files["name"] === "ProductLineDrawing") {
+                tag = "Line Drawing";
+            } else if (files["name"] === "ProductCertificate") {
+                tag = "Certificate";
+            }
+            
+            return {
+                "name": files["name"],
+                "tag": tag,
+                "url": files["url"]
+            };
+        });
+
+        // Replace images array in output JSON
+        jsonData['files'] = files;
+
+
+        //inventory
+        const inventory = {
+            "name": jsonData["inventory"]["itemName"],
+            "code": jsonData["inventory"]["itemNumber"],
+            "colour": {
+                "name": jsonData["inventory"]["colour"],
+                "hex": "",
+                "pms": ""
+            },
+            "onHand": jsonData["inventory"]["onHand"],
+            "onOrder": jsonData["inventory"]["onOrder"],
+            "incoming": jsonData["inventory"]["incomingStock"],
+            "available_country": "",//?
+            "supplier_id": jsonData["supplier_code"]
+        };
+
+        // Replace "inventory" object in output JSON
+        jsonData['inventory'] = inventory;
+
+
+
+        let lowestPriceAU = null;
+        for (const price of jsonData['pricetable_au']) {
+            for (let i = 9; i >= 1; i--) {
+                const priceKey = 'price' + i;
+                if (price[priceKey] !== '') {
+                    lowestPriceAU = price[priceKey];
+                    break;
+                }
+            }
+            if (lowestPriceAU !== null) {
+                break;
+            }
+        }
+
+        // Find lowest price in pricetable_nz
+        let lowestPriceNZ = null;
+        for (const price of jsonData['pricetable_nz']) {
+            for (let i = 9; i >= 1; i--) {
+                const priceKey = 'price' + i;
+                if (price[priceKey] !== '') {
+                    lowestPriceNZ = price[priceKey];
+                    break;
+                }
+            }
+            if (lowestPriceNZ !== null) {
+                break;
+            }
+        }
+      
+
+        // Create lowest_price objec
+        const lowestPrice = {
+            "lowest_priceAU": lowestPriceAU,
+            
+            "lowest_priceNZ": lowestPriceNZ,
+            
+        };
+
+        // Add lowest_price to output JSON
+        jsonData['lowest_price'] = lowestPrice;
+
+
+    
+
+        // Modify pricetable_au and pricetable_nz
+        const newPricetableAU = jsonData["pricetable_au"].map(entry => ({
+            ...entry,
+            "country": "AU",
+            "instruction": "",
+        }));
+        
+        const newPricetableNZ = jsonData["pricetable_nz"].map(entry => ({
+            ...entry,
+            "country": "NZ",
+            "instruction": "",
+        }));
+
+        // Update pricetable arrays in the output JSON
+        jsonData['AU'] = newPricetableAU;
+        jsonData['NZ'] = newPricetableNZ;
+
+
+        jsonData['product_url'] = jsonData['product_url'];
 
 
         // Define the order of keys to output
@@ -95,8 +200,15 @@ fs.readFile('input.json', 'utf8', (err, data) => {
             "packaging",
             "shipping_cost",
             "images",
-            "available_leadtime",
-            "additional_info"
+            "additional_info",
+            "files",
+            "inventory",
+            "product_url",
+            "AU",
+            "NZ",
+            "lowest_price",
+
+            "availableCountry",
             
             // Add more keys here if needed
         ];
