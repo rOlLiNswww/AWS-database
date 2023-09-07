@@ -298,17 +298,79 @@ fs.readFile('input.json', 'utf8', (err, data) => {
         const values = [ jsonData["product_code"],outputData,jsonData["supplier_code"]]; // 使用从 JSON 中读取的值
 
 
-        const decorations = jsonData.decorations || [];
+
+         // 执行 INSERT 语句
+         connection.query(sql, values, (err, results) => {
+          if (err) {
+            console.error('Error inserting data:', err);
+          } else {
+            console.log('Data inserted successfully!');
+          }
+
+          // 释放连接
+          connection.release();
+        });
+        
 
 //////////////////////// Insert Decorations table/////////////////////
+        const decorations = jsonData.decorations || [];
+        
+        const availableBranding = jsonData["available_branding"];
+        if (availableBranding) {
+        const imprintTypes = availableBranding.split(',').map(type => type.trim());
+
         for (const decoration of decorations) {
           const decorationName = decoration.Name;
           const Imprint_Area = decoration.Size;
           const Product_Code = jsonData["product_code"];
           const Supplier_Name = jsonData["supplier_code"];
+          const imprintType = imprintTypes.shift();
 
-          const sql = 'INSERT INTO Decoration (Decoration_Name,Imprint_Area,Product_Code,Supplier_Name) VALUES (?,?,?,?)';
-          const values = [decorationName,Imprint_Area,Product_Code,Supplier_Name]
+          const availableCountry = determineAvailableCountry(decoration);
+
+          const moq_surcharge_au = decoration["moq_surcharge"];
+          const setup_new_au = decoration["new_setup_au"];
+          const setup_repeat_au = decoration["repeat_setup_au"];
+          const name = decoration["Name"];
+          
+          const leadtime_au = decoration["leadtime_au"];
+          const cost_au = decoration["cost_au"];
+          const maxqty = decoration["maxqty"];
+
+          const servicesData = {
+            "AU": {
+              "moq_surcharge": null,
+              "setup_new": setup_new_au || null,
+              "setup_repeat": setup_repeat_au || null,
+              "instruction": name || null,
+              "details": [
+                {
+                  "order": "1",
+                  "leadtime": leadtime_au || null,
+                  "cost": cost_au || null,
+                  "maxqty": maxqty || null
+                }
+              ]
+            },
+            "NZ": {
+              "moq_surcharge": moq_surcharge_au || null,
+              "setup_new": decoration["new_setup_nz"] || null,
+              "setup_repeat": decoration["repeat_setup_nz"] || null,
+              "instruction": name || null,
+              "details": [
+                {
+                  "order": "1",
+                  "leadtime": decoration["leadtime_nz"] || null,
+                  "cost": decoration["cost_nz"] || null,
+                  "maxqty": maxqty || null
+                }
+              ]
+            }
+          };
+            
+
+          const sql = 'INSERT INTO Decoration (Decoration_Name,Imprint_Area,Product_Code,Supplier_Name,Imprint_Type,Avaliable_Country,Services) VALUES (?,?,?,?,?,?,?)';
+          const values = [decorationName,Imprint_Area,Product_Code,Supplier_Name,imprintType,availableCountry,JSON.stringify(servicesData)]
 
         connection.query(sql, values, (err, results) => {
           if (err) {
@@ -319,19 +381,10 @@ fs.readFile('input.json', 'utf8', (err, data) => {
           connection.release();
         });
         }
+      }
 /////////////////////////////////////////////////////////////////////
 
-        // 执行 INSERT 语句
-        connection.query(sql, values, (err, results) => {
-          if (err) {
-            console.error('Error inserting data:', err);
-          } else {
-            console.log('Data inserted successfully!');
-          }
-
-          // 释放连接
-          connection.release();
-        });
+       
        
 
         
@@ -342,5 +395,22 @@ fs.readFile('input.json', 'utf8', (err, data) => {
 });
 
 });
+
+
+function determineAvailableCountry(decoration) {
+  const leadtimeAU = decoration.leadtime_au;
+  const leadtimeNZ = decoration.leadtime_nz;
+
+  if (leadtimeAU && leadtimeNZ) {
+    return 'AU, NZ';
+  } else if (leadtimeAU) {
+    return 'AU';
+  } else if (leadtimeNZ) {
+    return 'NZ';
+  } else {
+    return ''; // 如果没有可用的 leadtime，返回空字符串
+  }
+}
+
 
 
