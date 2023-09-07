@@ -1,4 +1,23 @@
+const mysql = require('mysql2');
 const fs = require('fs');
+
+// 创建数据库连接池
+const pool = mysql.createPool({
+  host: '127.0.0.1',
+  user: 'wdc',
+  password: 'CVd9M#YF',
+  database: 'StandardBuffDB',
+});
+
+
+// 获取连接
+pool.getConnection((err, connection) => {
+  if (err) {
+    console.error('Error connecting to MySQL:', err);
+    return;
+  }
+
+
 
 fs.readFile('input.json', 'utf8', (err, data) => {
     if (err) {
@@ -132,18 +151,24 @@ fs.readFile('input.json', 'utf8', (err, data) => {
 
         // Find lowest price in pricetable_nz
         let lowestPriceNZ = null;
-        for (const price of jsonData['pricetable_nz']) {
-            for (let i = 9; i >= 1; i--) {
-                const priceKey = 'price' + i;
-                if (price[priceKey] !== '') {
-                    lowestPriceNZ = price[priceKey];
-                    break;
-                }
-            }
-            if (lowestPriceNZ !== null) {
-                break;
-            }
-        }
+        if (jsonData['pricetable_nz']) {
+          for (const price of jsonData['pricetable_nz']) {
+              for (let i = 9; i >= 1; i--) {
+                  const priceKey = 'price' + i;
+                  if (price[priceKey] !== '') {
+                      lowestPriceNZ = price[priceKey];
+                      break;
+                  }
+              }
+              if (lowestPriceNZ !== null) {
+                  break;
+              }
+          }
+          
+      } else {
+        
+      }
+      
       
 
         // Create lowest_price objec
@@ -158,8 +183,6 @@ fs.readFile('input.json', 'utf8', (err, data) => {
         jsonData['lowest_price'] = lowestPrice;
 
 
-    
-
         // Modify pricetable_au and pricetable_nz
         const newPricetableAU = jsonData["pricetable_au"].map(entry => ({
             ...entry,
@@ -167,15 +190,21 @@ fs.readFile('input.json', 'utf8', (err, data) => {
             "instruction": "",
         }));
         
-        const newPricetableNZ = jsonData["pricetable_nz"].map(entry => ({
-            ...entry,
-            "country": "NZ",
-            "instruction": "",
-        }));
+        const newPricetableNZ = null;
+        if (jsonData["pricetable_nz"]) {
+          newPricetableNZ = jsonData["pricetable_nz"].map(entry => ({
+              ...entry,
+              "country": "NZ",
+              "instruction": "",
+          }));   
+      } else {
+      }
+      
 
         // Update pricetable arrays in the output JSON
         jsonData['AU'] = newPricetableAU;
-        jsonData['NZ'] = newPricetableNZ;
+        if (newPricetableNZ) {
+        jsonData['NZ'] = newPricetableNZ;}
 
 
         jsonData['product_url'] = jsonData['product_url'];
@@ -262,15 +291,32 @@ fs.readFile('input.json', 'utf8', (err, data) => {
 
         const outputData = JSON.stringify(filteredData, null, 4);
 
-        fs.writeFile('output.json', outputData, 'utf8', (err) => {
-            if (err) {
-                console.error('Error writing to output.json:', err);
-            } else {
-                console.log('data has been written to output.json');
-            }
+
+
+        // 创建 INSERT 语句
+        const sql = 'INSERT INTO Products (Product_Code,Product_Details,Supplier_Name) VALUES (?,?,?)';
+        const values = [ jsonData["product_code"],outputData,jsonData["supplier_code"]]; // 使用从 JSON 中读取的值
+
+        // 执行 INSERT 语句
+        connection.query(sql, values, (err, results) => {
+          if (err) {
+            console.error('Error inserting data:', err);
+          } else {
+            console.log('Data inserted successfully!');
+          }
+
+          // 释放连接
+          connection.release();
         });
+       
+
+        
     } catch (parseError) {
         console.error('Error parsing input.json:', parseError);
     }
+    pool.end();
 });
+
+});
+
 

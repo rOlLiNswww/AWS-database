@@ -4,7 +4,7 @@ import re
 
 def check_availability(value):
     # 如果value是None，返回"null"
-    if value is None:
+    if value is None or value ==[]:
         return "null"
     # 如果value是字符串并且为空或只有空格，返回"null"
     elif isinstance(value, str) and value.strip() == "":
@@ -17,6 +17,7 @@ def check_availability(value):
 with open('input.json', 'r') as file:
     data = json.load(file)
     product_code_value = data.get('product_code')
+   
     product_name = data.get('product_name')
     related_product_code = data.get('related_product_code')
     product_is_discontinued = data.get('product_is_discontinued')
@@ -26,10 +27,29 @@ with open('input.json', 'r') as file:
     supplier_categories_category2 = categories.get('category2')
     supplier_categories_category3 = categories.get('category3')
     supplier_categories_category4 = categories.get('category4')
+
+    appa_category = data.get('appa_categories')
+
+    split_parts = appa_category.split("/")
+    first_part = split_parts[0]
+    second_part = split_parts[1]
   
     short_description = data.get('short_description')
     full_description = data.get('full_description')
+
+
     tag = data.get('tag')
+
+    tags = tag.split(",")
+
+    promo = [t for t in tags if t in ["new", "sale", "trending"]]
+    feature = [t for t in tags if t in ["eco", "full-colour"]]
+
+    promo = ','.join(promo) if promo else 'null'
+    feature = ','.join(feature) if feature else 'null'
+
+
+
     keywords = data.get('keywords')
     availbale_colour = data.get('availbale_colour')
     available_branding = data.get('available_branding')
@@ -43,6 +63,10 @@ with open('input.json', 'r') as file:
     specification_value3 = data.get('specification_value3')
     specification_name4 = data.get('specification_name4')
     specification_value4 = data.get('specification_value4')
+    specification_name5 = data.get('specification_name5')
+    specification_value5 = data.get('specification_value5')
+
+
 
     packaging_type = data.get('packaging_type')
     carton_length = data.get('carton_length')
@@ -51,7 +75,49 @@ with open('input.json', 'r') as file:
     carton_weight = data.get('carton_weight')
     carton_qty = data.get('carton_qty')
 
+
+
     images = data.get('images')
+
+    filename_string = ""
+    for image in images:
+        url = image["url"]
+        filename = url.split("/")[-1]
+        filename_string += filename + ","
+
+    if filename_string.endswith(","):
+        image_string = filename_string[:-1]
+
+
+
+    files = data.get('files')
+
+    file_string = ""
+    for file in files:
+        url = file["url"]
+        filename = url.split("/")[-1]
+        file_string += filename + ","
+
+    if filename_string.endswith(","):
+        file_string = file_string[:-1]
+
+
+
+    inventory_data = data.get('inventory')  # 获取 inventory 数据
+
+    if isinstance(inventory_data, list):
+        inventory_string = ""
+        for item in inventory_data:
+            item_name = item.get("itemName")
+            if item_name:
+                inventory_string += item_name + ","
+
+        # 移除最后一个逗号
+        if inventory_string.endswith(","):
+            inventory_string = inventory_string[:-1]
+    else:
+        inventory_string = inventory_data.get("itemName")
+
 
     available_leadtime = data.get('carton_qty')
 
@@ -80,12 +146,18 @@ with open('input.json', 'r') as file:
     change_log_au = data.get('change_log_au')
     change_log_nz = data.get('change_log_nz')
 
+
+    combined_change_log = f"{change_log_au}{change_log_nz}"
+
+
     files = data.get('files')
 
     product_url = data.get('product_url')
     
     pricetable_au = data.get('pricetable_au')
     pricetable_nz = data.get('pricetable_nz')
+
+    moq = pricetable_au[0]['moq']
     
 
     has_au = 'pricetable_au' in data
@@ -101,18 +173,35 @@ with open('input.json', 'r') as file:
     else:
         available_country = "null" 
 
+    ava_au = 'Y' if 'AU' in available_country else 'N' if available_country else None
+    ava_nz = 'Y' if 'NZ' in available_country else 'N' if available_country else None
+
+
+
 supplier_code = data.get('supplier_code')
+
+
+decorations = data.get('decorations')
+
+
+video =  data.get('video')
+
+
+
+
+
 # 加载现有的 Excel 文件
-file_path = '/Users/wudongchen/Downloads/OpenPromo - Standard Data format - V1.xlsx'
+file_path = '/Users/wudongchen/Downloads/Open Promo - Data Design - V3 (1).xlsx'
 workbook = openpyxl.load_workbook(file_path)
 
 # 获取 "ProductsNew" 工作表
-if "ProductsNew" in workbook.sheetnames:
-    sheet = workbook["ProductsNew"]
+if "Products" in workbook.sheetnames:
+    sheet = workbook["Products"]
 else:
-    print("ProductsNew sheet doesn't exist in the workbook.")
+    print("Products sheet doesn't exist in the workbook.")
     exit()
-
+suppier_name = "Dex Collection"
+supplier_code = "DEX"
 
 # 写入 "test" 到 "product_code" 列的下一行
 # 假设 "product_code" 在第一行第一列，你需要根据实际情况调整
@@ -120,86 +209,22 @@ last_row = sheet.max_row
 
 
 product_details = [
-    product_code_value, product_name, related_product_code,
-    product_is_discontinued, supplier_categories_category1, 
+    suppier_name, supplier_code, product_name, product_code_value, related_product_code,
+    product_is_discontinued, first_part,second_part, supplier_categories_category1, 
     supplier_categories_category2, supplier_categories_category3, 
-    supplier_categories_category4, short_description, full_description, tag,
-    keywords, availbale_colour, available_branding, colour_pms, 
-    specification_name1, specification_value1, specification_name2,
+    supplier_categories_category4,short_description, full_description,feature,promo,
+    keywords, specification_name1, specification_value1, specification_name2,
     specification_value2, specification_name3, specification_value3, 
-    specification_name4, specification_value4, packaging_type, carton_length,
-    carton_width, carton_height, carton_weight, carton_qty]
+    specification_name4, specification_value4,specification_name5,specification_value5,availbale_colour, colour_pms,
+    packaging_type, carton_length,carton_width, carton_height, carton_weight, carton_qty,moq,ava_au]
 
 for col_num, value in enumerate(product_details, start=1):
     sheet.cell(row=last_row + 1, column=col_num).value = check_availability(value)
 
-
-current_column = 30  # 假设在第30列开始写入URLs
-
-for image in images:
-    name = check_availability(image.get('name', 'null'))  # 使用null作为默认值
-    tag = check_availability(image.get('tag', 'null'))
-    colour = check_availability(image.get('colour', 'null'))
-    url = check_availability(image.get('url', 'null'))
-    
-    sheet.cell(row=last_row + 1, column=current_column).value = name
-    current_column += 1
-    
-    sheet.cell(row=last_row + 1, column=current_column).value = tag
-    current_column += 1
-    
-    sheet.cell(row=last_row + 1, column=current_column).value = colour
-    current_column += 1
-    
-    sheet.cell(row=last_row + 1, column=current_column).value = url
-    current_column += 1
-
-sheet.cell(row=last_row + 1, column=54).value = available_leadtime
-
-sheet.cell(row=last_row + 1, column=55).value = additional_info_price_disclaimer
-sheet.cell(row=last_row + 1, column=56).value = freight_disclaimer_au
-sheet.cell(row=last_row + 1, column=57).value = freight_disclaimer_nz
-sheet.cell(row=last_row + 1, column=58).value = additional_info
-sheet.cell(row=last_row + 1, column=59).value = change_log_au
-sheet.cell(row=last_row + 1, column=60).value = change_log_nz
-
-
-current_column = 61  # 假设在第30列开始写入URLs
-
-for file in files:
-    name = check_availability(file.get('name', 'null')) # 使用null作为默认值
-    tag = check_availability(file.get('tag', 'null'))
-    url = check_availability(file.get('url', 'null'))
-    
-    sheet.cell(row=last_row + 1, column=current_column).value = name
-    current_column += 1
-    
-    if name == 'ProductLineDrawing':
-        sheet.cell(row=last_row + 1, column=current_column).value = "LineDrawing"
-        current_column += 1
-    elif name == 'ProductCertificate':
-        sheet.cell(row=last_row + 1, column=current_column).value = "Certificate"
-        current_column += 1
-    else:
-        # 如果tag不是LineDrawing或Certificate，存储默认值
-        sheet.cell(row=last_row + 1, column=current_column).value = tag
-        current_column += 1
-    
-    sheet.cell(row=last_row + 1, column=current_column).value = url
-    current_column += 1
-
-sheet.cell(row=last_row + 1, column=72).value = product_url
-sheet.cell(row=last_row + 1, column=73).value = available_country
-sheet.cell(row=last_row + 1, column=74).value = supplier_code
-
-
-current_column = 75
+current_column = 38
 for price in pricetable_au:
     description = check_availability(price.get('description', 'null'))
-    instruction = check_availability(price.get('instruction', 'null'))
-    moq = check_availability(price.get('moq', 'null'))
     moq_surcharge = check_availability(price.get('moq_surcharge', 'null'))
-    lowest_price = check_availability(price.get('lowest_price', 'null'))
     
     qty_price_pairs = [
         (price.get(f'qty{i}', 'null'), price.get(f'price{i}', 'null'))
@@ -210,39 +235,24 @@ for price in pricetable_au:
     sheet.cell(row=last_row + 1, column=current_column).value = description
     current_column += 1
 
-    sheet.cell(row=last_row + 1, column=current_column).value = instruction
-    current_column += 1
-
-    sheet.cell(row=last_row + 1, column=current_column).value = moq
-    current_column += 1
-
     sheet.cell(row=last_row + 1, column=current_column).value = moq_surcharge
     current_column += 1
 
-    sheet.cell(row=last_row + 1, column=current_column).value = lowest_price
-    current_column += 1
-    
     for qty, price in qty_price_pairs:
         sheet.cell(row=last_row + 1, column=current_column).value = qty
         current_column += 1
         
         sheet.cell(row=last_row + 1, column=current_column).value = price
         current_column += 1
-    
-    # If you want to reset the current_column to a specific number after each loop, do it here.
-    # Otherwise, remove or comment the next line.
-    # current_column = INITIAL_COLUMN_VALUE
 
+sheet.cell(row=last_row + 1, column=58).value = ava_nz
 
-current_column = 121
+current_column = 59
 pricetable_nz = pricetable_nz or []
 for price in pricetable_nz:
     description = check_availability(price.get('description', 'null'))
-    instruction = check_availability(price.get('instruction', 'null'))
-    moq = check_availability(price.get('moq', 'null'))
     moq_surcharge = check_availability(price.get('moq_surcharge', 'null'))
-    lowest_price = check_availability(price.get('lowest_price', 'null'))
-    
+   
     qty_price_pairs = [
         (price.get(f'qty{i}', 'null'), price.get(f'price{i}', 'null'))
         for i in range(1, 10)
@@ -252,17 +262,9 @@ for price in pricetable_nz:
     sheet.cell(row=last_row + 1, column=current_column).value = description
     current_column += 1
 
-    sheet.cell(row=last_row + 1, column=current_column).value = instruction
-    current_column += 1
-
-    sheet.cell(row=last_row + 1, column=current_column).value = moq
-    current_column += 1
-
     sheet.cell(row=last_row + 1, column=current_column).value = moq_surcharge
     current_column += 1
 
-    sheet.cell(row=last_row + 1, column=current_column).value = lowest_price
-    current_column += 1
     
     for qty, price in qty_price_pairs:
         sheet.cell(row=last_row + 1, column=current_column).value = qty
@@ -271,6 +273,34 @@ for price in pricetable_nz:
         sheet.cell(row=last_row + 1, column=current_column).value = price
         current_column += 1
     
+
+
+
+current_column = 79
+decorations = decorations or []
+for dec in decorations:
+    Name = check_availability(dec.get('Name', 'null'))
+    Size = check_availability(dec.get('Size', 'null'))
+   
     
+    # Update Excel cells
+    sheet.cell(row=last_row + 1, column=current_column).value = Name
+    current_column += 1
+
+    sheet.cell(row=last_row + 1, column=current_column).value = Size
+    current_column += 1
+
+    
+
+sheet.cell(row=last_row + 1, column=92).value = image_string
+sheet.cell(row=last_row + 1, column=93).value = file_string  
+sheet.cell(row=last_row + 1, column=94).value = video 
+sheet.cell(row=last_row + 1, column=95).value = inventory_string
+sheet.cell(row=last_row + 1, column=96).value = combined_change_log
+sheet.cell(row=last_row + 1, column=97).value = additional_info
+
+
+
+
 # 保存更改
 workbook.save(file_path)
