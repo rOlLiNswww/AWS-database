@@ -190,7 +190,7 @@ fs.readFile('input.json', 'utf8', (err, data) => {
             "instruction": "",
         }));
         
-        const newPricetableNZ = null;
+        let newPricetableNZ = null;
         if (jsonData["pricetable_nz"]) {
           newPricetableNZ = jsonData["pricetable_nz"].map(entry => ({
               ...entry,
@@ -331,7 +331,8 @@ for (const decoration of decorations) {
   const Product_Code = jsonData["product_code"];
   const Supplier_Name = jsonData["supplier_code"];
   const imprintType = imprintTypes.shift();
-  const availableCountry = determineAvailableCountry(decoration); // 请确保此函数在你的代码中已定义
+  const availableCountry = jsonData['availableCountry'];
+
 
   if (!groupedByNames[decorationName]) {
     groupedByNames[decorationName] = {
@@ -342,23 +343,28 @@ for (const decoration of decorations) {
         instruction: decorationName,
         details: []
       },
-      NZ: {
-        moq_surcharge: null,
-        setup_new: decoration["new_setup_nz"],
-        setup_repeat: decoration["repeat_setup_nz"],
-        instruction: decorationName,
-        details: []
-      },
+      
       Imprint_Area,
       Product_Code,
       Supplier_Name,
       Imprint_Type: imprintType,
       Avaliable_Country: availableCountry
-    };
+    };if (availableCountry !== 'AU') {
+      groupedByNames[decorationName].NZ = {
+          moq_surcharge: null,
+          setup_new: decoration["new_setup_nz"],
+          setup_repeat: decoration["repeat_setup_nz"],
+          instruction: decorationName,
+          details: []
+      };
+  }
   }
 
   const orderNumberAU = groupedByNames[decorationName].AU.details.length + 1;
-  const orderNumberNZ = groupedByNames[decorationName].NZ.details.length + 1;
+  let orderNumberNZ = 0;
+  if(groupedByNames[decorationName].NZ) {
+      orderNumberNZ = groupedByNames[decorationName].NZ.details.length + 1;
+  }
 
   groupedByNames[decorationName].AU.details.push({
     order: orderNumberAU.toString(),
@@ -367,12 +373,15 @@ for (const decoration of decorations) {
     maxqty: decoration["maxqty"]
   });
 
-  groupedByNames[decorationName].NZ.details.push({
-    order: orderNumberNZ.toString(),
-    leadtime: decoration["leadtime_nz"],
-    cost: decoration["cost_nz"],
-    maxqty: decoration["maxqty"]
-  });
+  if(groupedByNames[decorationName].NZ && decoration["leadtime_nz"]) {
+    groupedByNames[decorationName].NZ.details.push({
+      order: orderNumberNZ.toString(),
+      leadtime: decoration["leadtime_nz"],
+      cost: decoration["cost_nz"],
+      maxqty: decoration["maxqty"]
+    });
+  }
+  
 }
 
 for (const [name, data] of Object.entries(groupedByNames)) {
@@ -394,10 +403,6 @@ for (const [name, data] of Object.entries(groupedByNames)) {
 
 /////////////////////////////////////////////////////////////////////
 
-       
-       
-
-        
     } catch (parseError) {
         console.error('Error parsing input.json:', parseError);
     }
