@@ -297,6 +297,30 @@ fs.readFile('input.json', 'utf8', (err, data) => {
         const sql = 'INSERT INTO Products (Product_Code,Product_Details,Supplier_Name) VALUES (?,?,?)';
         const values = [ jsonData["product_code"],outputData,jsonData["supplier_code"]]; // 使用从 JSON 中读取的值
 
+
+        const decorations = jsonData.decorations || [];
+
+//////////////////////// Insert Decorations table/////////////////////
+        for (const decoration of decorations) {
+          const decorationName = decoration.Name;
+          const Imprint_Area = decoration.Size;
+          const Product_Code = jsonData["product_code"];
+          const Supplier_Name = jsonData["supplier_code"];
+
+          const sql = 'INSERT INTO Decoration (Decoration_Name,Imprint_Area,Product_Code,Supplier_Name) VALUES (?,?,?,?)';
+          const values = [decorationName,Imprint_Area,Product_Code,Supplier_Name]
+
+        connection.query(sql, values, (err, results) => {
+          if (err) {
+            console.error('Error inserting data:', err);
+          } else {
+            console.log('Data inserted successfully!');
+          }
+          connection.release();
+        });
+        }
+/////////////////////////////////////////////////////////////////////
+
         // 执行 INSERT 语句
         connection.query(sql, values, (err, results) => {
           if (err) {
