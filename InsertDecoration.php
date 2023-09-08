@@ -80,6 +80,7 @@ foreach ($decorations as $decoration) {
 //$pdo = new PDO(/* 数据库连接信息 */);
 foreach ($groupedByNames as $name => $data) {
     $sql = 'INSERT INTO Decoration (Decoration_Name, Imprint_Area, Product_Code, Supplier_Name, Imprint_Type, Avaliable_Country, Services) VALUES (?, ?, ?, ?, ?, ?, ?)';
+    $nzData = isset($data['NZ']) ? $data['NZ'] : array();
     $values = array(
         $name,
         $data['Imprint_Area'],
@@ -87,7 +88,8 @@ foreach ($groupedByNames as $name => $data) {
         $data['Supplier_Name'],
         $data['Imprint_Type'],
         $data['Avaliable_Country'],
-        json_encode(array('AU' => $data['AU'], 'NZ' => $data['NZ']))
+        json_encode(array('AU' => $data['AU'], 'NZ' => $nzData))
+
     );
     $stmt = $pdo->prepare($sql);
     $stmt->execute($values);
