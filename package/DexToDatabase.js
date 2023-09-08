@@ -27,7 +27,6 @@ fs.readFile('input.json', 'utf8', (err, data) => {
 
     try {
         const jsonData = JSON.parse(data);
-
         const specification = {};
         for (let i = 1; i <= 4; i++) {
             const nameKey = `specification_name${i}`;
@@ -40,7 +39,7 @@ fs.readFile('input.json', 'utf8', (err, data) => {
 
         jsonData['specification'] = specification;
 
-
+        
         const packaging = {
             "packaging_type": jsonData["packaging_type"] || "",
             "carton_length": jsonData["carton_length"] || "",
@@ -271,7 +270,7 @@ fs.readFile('input.json', 'utf8', (err, data) => {
             if (featureTags.length > 0) {
                 jsonData["Feature"] = featureTags.join(',');
             }
-        }
+        }outputData
         if (jsonData.hasOwnProperty("categories")) {
             jsonData["supplier_categories"] = jsonData["categories"];
         }
@@ -395,7 +394,6 @@ for (const [name, data] of Object.entries(groupedByNames)) {
     if (err) {
       console.error('Error inserting data:', err);
     } else {
-      console.log('Data inserted successfully!');
     }
   });
 }
@@ -411,21 +409,6 @@ for (const [name, data] of Object.entries(groupedByNames)) {
 
 });
 
-
-function determineAvailableCountry(decoration) {
-  const leadtimeAU = decoration.leadtime_au;
-  const leadtimeNZ = decoration.leadtime_nz;
-
-  if (leadtimeAU && leadtimeNZ) {
-    return 'AU, NZ';
-  } else if (leadtimeAU) {
-    return 'AU';
-  } else if (leadtimeNZ) {
-    return 'NZ';
-  } else {
-    return ''; // 如果没有可用的 leadtime，返回空字符串
-  }
-}
 
 
 
