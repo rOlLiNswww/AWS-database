@@ -1,8 +1,7 @@
 <?php
 require 'db_connection.php';
-// 从input.json读取数据
-$data = file_get_contents('input.json');
-$jsonData = json_decode($data, true);
+
+
 
 //读取数据保存为json
 $outputData = array();

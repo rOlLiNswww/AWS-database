@@ -13,5 +13,6 @@ try {
 } catch (PDOException $e) {
     die("Error connecting to the database: " . $e->getMessage());
 }
-
+$data = file_get_contents('input.json');
+$jsonData = json_decode($data, true);
 ?>

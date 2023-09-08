@@ -1,10 +1,6 @@
 <?php
 require 'db_connection.php';
 
-// 从input.json读取数据
-$data = file_get_contents('input.json');
-$jsonData = json_decode($data, true);
-
 // 初始化
 $decorations = isset($jsonData['decorations']) ? $jsonData['decorations'] : array();
 $groupedByNames = array();
