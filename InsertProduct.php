@@ -15,6 +15,12 @@ if (isset($jsonData['categories'])) {
     $outputData['supplier_categories'] = $jsonData['categories'];
 }
 
+
+
+$parts = explode(' / ', $jsonData["appa_categories"]);
+$category = end($parts);
+$outputData['categorychild'] = $category;
+
 $outputData['short_description'] = $jsonData['short_description'];
 
 $outputData['full_description'] = $jsonData['full_description'];
@@ -96,6 +102,36 @@ $imagesWithTags = array_map(function($image) {
 
 // Replace images array in output JSON
 $outputData['images'] = $imagesWithTags;
+
+$leadtimes = [];
+
+foreach ($jsonData['decorations'] as $decoration) {
+    $leadtimeAU = $decoration['leadtime_au'];
+    
+    $leadtimeAU = preg_replace('/(\d+)\s*(\w+)/', 'EQ$1' . (strpos($leadtimeAU, 'Hours') !== false ? 'H' : 'D'), $leadtimeAU);
+    
+    $leadtimeAU = str_replace(' Days', '', $leadtimeAU);
+   
+    if (!in_array($leadtimeAU, $leadtimes)) {
+        $leadtimes[] = $leadtimeAU;
+    }
+
+}
+
+$outputData['avaliable_leadtime'] = $leadtimes;
+
+$convertedLeadtimes = array_map(function ($leadtime) {
+    return str_replace('24H', '1D', $leadtime);
+}, $leadtimes);
+
+$numericValues = array_map(function ($leadtime) {
+    return (int)str_replace(['EQ', 'D'], '', $leadtime);
+}, $convertedLeadtimes);
+
+$minValue = min($numericValues);
+$outputData['lowest_leadtime'] = $minValue;
+
+
 
 $additional_info = [
     "price_disclaimer" => isset($jsonData["price_disclaimer"]) ? $jsonData["price_disclaimer"] : "",
@@ -181,12 +217,22 @@ if (isset($jsonData['pricetable_nz'])) {
     }
 }
 
+$onHandValues = array_column($jsonData['inventory'], 'onHand');
+// 找到最小的 "onHand" 值
+$minOnHand = min($onHandValues);
+
+$outputData['available_stock'] = $minOnHand;
+
+
 $lowestPrice = [
     "lowest_priceAU" => $lowestPriceAU,
     "lowest_priceNZ" => $lowestPriceNZ
 ];
 
+
+
 $outputData['lowest_price'] = $lowestPrice;
+
 
 
 $hasAUPricing = array_key_exists("pricetable_au", $jsonData);
