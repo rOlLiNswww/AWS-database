@@ -1,6 +1,6 @@
 <?php
-include 'InsertProduct.php';
-include 'InsertDecoration.php';
-include 'InsertInventory.php';
-include 'InsertAddOn.php'
+include 'DexToDatabase/InsertProduct.php';
+include 'DexToDatabase/InsertDecoration.php';
+include 'DexToDatabase/InsertInventory.php';
+include 'DexToDatabase/InsertAddOn.php'
 ?>
