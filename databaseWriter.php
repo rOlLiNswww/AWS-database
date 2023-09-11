@@ -22,7 +22,7 @@ $result = $client->initiateAuth([
     ],
 ]);
 
-
+//验证用户
 $idToken = $result['AuthenticationResult']['IdToken'];
 
 
@@ -95,9 +95,9 @@ mutation CreateProduct(
 
 $pdo = new PDO($dsn, $user, $pass);
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-$stmt = $pdo->query('SELECT Product_Code,Product_Details,Supplier_Name FROM products WHERE Product_Code = "ZINK003"'); // 修改表名和条件
+$stmt = $pdo->query('SELECT Product_Code,Product_Details,Supplier_Name FROM products WHERE Product_Code = "BOH001"'); // 修改表名和条件
 $row = $stmt->fetch();
-
+//提取json中的数据
 $productDetails = json_decode($row['Product_Details'], true);
 $product_name = isset($productDetails['product_name']) ? $productDetails['product_name'] : null;
 $product_is_discontinued = isset($productDetails['product_is_discontinued']) ? $productDetails['product_is_discontinued'] : null;
@@ -106,12 +106,18 @@ $available_branding = isset($productDetails['available_branding']) ? $productDet
 $brandingOptions = explode(',', $available_branding);
 $brandingOptions = array_map('trim', $brandingOptions);
 $lowest_leadtime = isset($productDetails['lowest_leadtime']) ? $productDetails['lowest_leadtime'] : null;
-var_dump($lowest_leadtime);
 $keywords = isset($productDetails['keywords']) ? $productDetails['keywords'] : null;
 $Feature = isset($productDetails['Feature']) ? $productDetails['Feature'] : null;
 $avaliable_leadtime = isset($productDetails['avaliable_leadtime']) ? $productDetails['avaliable_leadtime'] : null;
 
+$related_product_code = isset($productDetails['related_product_code']) ? $productDetails['related_product_code'] : "null";
+if ($related_product_code === null) {
+    $related_product_code = "null";
+}
 
+$packaging = isset($productDetails['packaging']) ? json_encode($productDetails['packaging']) : null;
+
+$supplier_categories = isset($productDetails['supplier_categories']) ? json_encode($productDetails['supplier_categories']) : null;
 $variables = [
     'input' => [
         'supplierID' => '2d4a265b-de20-40c4-82f7-421253a4ec94',
@@ -124,8 +130,10 @@ $variables = [
         'lowest_leadtime' =>$lowest_leadtime,
         'keywords' =>$keywords,
         'feature_tags' =>$Feature,
-        'available_leadtime' =>$avaliable_leadtime
-
+        'available_leadtime' =>$avaliable_leadtime,
+        'related_product' => $related_product_code,
+        'packaging' => $packaging,
+        'supplier_categories' => $supplier_categories
     ]
 ];
 
