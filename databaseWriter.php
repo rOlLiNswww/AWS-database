@@ -1,37 +1,7 @@
 <?php
 require 'db_connection.php';
 require 'vendor/autoload.php';
-
-use Aws\CognitoIdentityProvider\CognitoIdentityProviderClient;
-//在IAM创建一个外部调用的key
-$client = new CognitoIdentityProviderClient([
-    'version' => 'latest',
-    'region'  => 'us-east-1', // 你的 AWS 区域
-    'credentials' => [
-        'key'    => 'AKIA3U7WIJBEFWP3L5MQ',
-        'secret' => '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',
-    ],
-]);
-//登陆用户
-$result = $client->initiateAuth([
-    'AuthFlow' => 'USER_PASSWORD_AUTH',
-    'ClientId' => '74pc69s5vnoa0vh5s6u0co2q33',
-    'AuthParameters' => [
-        'USERNAME' => 'bihonom135@lukaat.com',
-        'PASSWORD' => 'wdc20010109',
-    ],
-]);
-
-//验证用户
-$idToken = $result['AuthenticationResult']['IdToken'];
-
-
-
-$apiUrl = "https://6brrcx5ltbaq7dqk22zwdq64sq.appsync-api.us-east-1.amazonaws.com/graphql";
-$headers = [
-    "Content-Type: application/json",
-    "Authorization: $idToken"
-];
+require 'UserAuth.php';
 
 $query = '
 mutation CreateProduct(

@@ -5,12 +5,25 @@ require 'db_connection.php';
 $inventoryData = isset($jsonData['inventory'][0]) ? $jsonData['inventory'] : array($jsonData['inventory']);
 
 foreach ($inventoryData as $item) {
+    // 检查是否满足跳过条件
+    if (
+        isset($item['itemNumber']) && $item['itemNumber'] === "" &&
+        isset($item['itemName']) && $item['itemName'] === "" &&
+        $item['colour'] === null &&
+        isset($item['onHand']) && $item['onHand'] === "" &&
+        $item['onOrder'] === null &&
+        isset($item['incomingStock']) && $item['incomingStock'] === ""
+    ) {
+        continue;
+    }
+
+    // 以下是原始的插入逻辑
     $itemNumber = isset($item['itemNumber']) ? $item['itemNumber'] : null;
     $itemName = isset($item['itemName']) ? $item['itemName'] : null;
     $colour = isset($item['colour']) ? $item['colour'] : null;
-    $onHand = isset($item['onHand']) ? intval($item['onHand']) : null; // 转换为整数
-    $onOrder = isset($item['onOrder']) ? intval($item['onOrder']) : null; // 转换为整数
-    $incomingStock = isset($item['incomingStock']) ? intval($item['incomingStock']) : null; // 转换为整数
+    $onHand = isset($item['onHand']) ? intval($item['onHand']) : null;
+    $onOrder = isset($item['onOrder']) ? intval($item['onOrder']) : null;
+    $incomingStock = isset($item['incomingStock']) ? intval($item['incomingStock']) : null;
     $productCode = $jsonData['product_code'];
     $supplierName = $jsonData['supplier_code'];
 
@@ -24,6 +37,7 @@ foreach ($inventoryData as $item) {
         echo "Error inserting data.";
     }
 }
+
 
 ?>
 
