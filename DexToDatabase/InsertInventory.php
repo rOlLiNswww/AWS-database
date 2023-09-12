@@ -1,7 +1,9 @@
 <?php
 require 'db_connection.php';
 
+function insertInventory($jsonData) {
 
+global $pdo;
 $inventoryData = isset($jsonData['inventory'][0]) ? $jsonData['inventory'] : array($jsonData['inventory']);
 
 foreach ($inventoryData as $item) {
@@ -32,12 +34,11 @@ foreach ($inventoryData as $item) {
     $values = [$itemNumber, $itemName, $colour, $onHand, $incomingStock, $productCode, $supplierName, $onOrder];
 
     if ($stmt->execute($values)) {
-        echo "Data inserted successfully!";
     } else {
         echo "Error inserting data.";
     }
 }
 
-
+}
 ?>
 

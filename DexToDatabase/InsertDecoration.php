@@ -1,6 +1,9 @@
 <?php
 require 'db_connection.php';
 
+function insertDecoration($jsonData) {
+
+global $pdo;
 // 初始化
 $decorations = isset($jsonData['decorations']) ? $jsonData['decorations'] : array();
 $groupedByNames = array();
@@ -10,20 +13,25 @@ if ($availableBranding === "") {
 }
 $imprintTypes = $availableBranding ? array_map('trim', explode(',', $availableBranding)) : array();
 
+$previousImprintType = null; 
 foreach ($decorations as $decoration) {
     $decorationName = $decoration['Name'];
 
-    // 从第一段代码中获取名称处理
     $words = explode(' ', $decorationName);
-    if (count($words) > 3) {
-        $decorationName = implode(' ', array_slice($words, -3));
-    }
+
+    $decorationName = preg_replace('/\d+|-|\.|Days|Weeks|Hrs/i', '',  $decorationName);
+    $decorationName = trim($decorationName);
 
     $Imprint_Area = $decoration['Size'];
     $Product_Code = $jsonData['product_code'];
     $Supplier_Name = $jsonData['supplier_code'];
     $imprintType = array_shift($imprintTypes);
-
+    
+    if ($imprintType === null) {
+        $imprintType = $previousImprintType;
+    } else {
+        $previousImprintType = $imprintType;
+    }
 
     $hasAUPricing = array_key_exists("pricetable_au", $jsonData);
     $hasNZPricing = array_key_exists("pricetable_nz", $jsonData);
@@ -98,5 +106,5 @@ foreach ($groupedByNames as $name => $data) {
     $stmt->execute($values);
 }
 
-
+}
 ?>

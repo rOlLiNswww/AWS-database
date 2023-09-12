@@ -151,4 +151,5 @@ if (isset($parsedResponse['data']['createProduct']['id'])) {
   echo "Error in creating product or retrieving ID.";
   print_r($parsedResponse);
 }
+
 ?>

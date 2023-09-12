@@ -2,6 +2,9 @@
 require 'db_connection.php';
 
 
+function insertProduct($jsonData) {
+
+global $pdo;
 
 //读取数据保存为json
 $outputData = array();
@@ -277,9 +280,10 @@ $values = [$jsonData["product_code"],$outputDataJson, $jsonData["supplier_code"]
 
 
 if ($stmt->execute($values)) {
-    echo "Data inserted successfully!";
-} else {
+    echo  $jsonData["product_code"] . " inserted successfully!\n";
+}
+ else {
     echo "Error inserting data.";
 }
-
+}
 ?>

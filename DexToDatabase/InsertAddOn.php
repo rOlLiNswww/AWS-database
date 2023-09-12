@@ -1,7 +1,9 @@
 <?php
 require 'db_connection.php';
 
+function insertAddon($jsonData) {
 
+global $pdo;
 if (isset($jsonData['addons'])) {
 foreach ($jsonData['addons'] as $item) {
    
@@ -19,7 +21,7 @@ foreach ($jsonData['addons'] as $item) {
     foreach ($jsonData['decorations'] as $decorationItem) {
 
         $decorationData = [
-            "name" => $name,
+            "name" => $itemName,
             "size" => $decorationItem['Size'],
             "cost_au" => $decorationItem['cost_au'],
             "cost_nz" => $decorationItem['cost_nz'],
@@ -44,6 +46,6 @@ foreach ($jsonData['addons'] as $item) {
         echo "Error inserting data.";
     }
 }}
-
+}
 ?>
 
