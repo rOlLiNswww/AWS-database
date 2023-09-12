@@ -57,6 +57,8 @@ if (isset($jsonData['tag'])) {
     }
     if (count($featureTags) > 0) {
         $outputData['Feature'] = implode(',', $featureTags);
+    }else {
+        $outputData['Feature'] = null;
     }
 }
 
@@ -64,7 +66,7 @@ $outputData['keywords'] = $jsonData['keywords'];
 
 $availableColour = $jsonData['availbale_colour'];
 
-if ($availableColour === "Range of Colours") {
+if ($availableColour === "Range of Colours" || strpos($jsonData['tag'], 'full-colour') !== false) {
     $outputData['availbale_colour'] = [
         "WHITE",
         "YELLOW",
@@ -76,7 +78,8 @@ if ($availableColour === "Range of Colours") {
         "BLUE",
         "BLACK"
     ];
-} else {
+    
+}  else {
     $pattern = '/\([^)]*\)|\|/';
     $cleanedColour = preg_replace($pattern, '|', $availableColour);
     $colourArray = array_filter(explode("|", $cleanedColour), 'trim'); 

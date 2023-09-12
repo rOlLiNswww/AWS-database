@@ -65,8 +65,10 @@ mutation CreateProduct(
 
 $pdo = new PDO($dsn, $user, $pass);
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-$stmt = $pdo->query('SELECT Product_Code,Product_Details,Supplier_Name FROM products WHERE Product_Code = "JB006"'); // 修改表名和条件
-$row = $stmt->fetch();
+$stmt = $pdo->query('SELECT Product_Code,Product_Details,Supplier_Name FROM products');
+
+while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+
 //提取json中的数据
 $productDetails = json_decode($row['Product_Details'], true);
 $product_name = isset($productDetails['product_name']) ? $productDetails['product_name'] : null;
@@ -85,7 +87,7 @@ $availbale_colour = isset($productDetails['availbale_colour']) ? $productDetails
 $related_product_code = isset($productDetails['related_product_code']) ? $productDetails['related_product_code'] : "null";
 $product_url = isset($productDetails['product_url']) ? $productDetails['product_url'] : "null";
 $availableCountry = isset($productDetails['availableCountry']) ? $productDetails['availableCountry'] : "null";
-$promo = isset($productDetails['Promo']) ? $productDetails['Promo'] : "null";
+$promo = isset($productDetails['Promo']) ? $productDetails['Promo'] : null;
 $available_stock = isset($productDetails['available_stock']) ? $productDetails['available_stock'] : 0;
 $lowest_priceAU = isset($productDetails['lowest_price']['lowest_priceAU']) ? $productDetails['lowest_price']['lowest_priceAU'] : 0;
 $lowest_priceNZ = isset($productDetails['lowest_price']['lowest_priceNZ']) ? $productDetails['lowest_price']['lowest_priceNZ'] : 0;
@@ -99,42 +101,41 @@ $shipping_cost = isset($productDetails['shipping_cost']) ? json_encode($productD
 $additional_info = isset($productDetails['additional_info']) ? json_encode($productDetails['additional_info']) : "null";
 $files = isset($productDetails['files']) ? json_encode($productDetails['files']) : "null";
 $pricing = isset($productDetails['pricing']) ? json_encode($productDetails['pricing']) : "null";
+
 $variables = [
-    'input' => [
-        'supplierID' => '2d4a265b-de20-40c4-82f7-421253a4ec94',
-        'categorychildID' => '85b549dd-ba7f-4b5c-b0e2-d5c184c7bf9e',
-        'name' => $product_name,
-        'code' => $row['Product_Code'],
-        'is_discontinued' =>$product_is_discontinued,
-        'full_description' =>$full_description,
-        'available_branding' =>$brandingOptions,
-        'lowest_leadtime' =>$lowest_leadtime,
-        'keywords' =>$keywords,
-        'feature_tags' =>$Feature,
-        'available_leadtime' =>$avaliable_leadtime,
-        'related_product' => $related_product_code,
-        'packaging' => $packaging,
-        'supplier_categories' => $supplier_categories,
-        'short_description' => $short_description,
-        'keywords' => $keywords,
-        'available_colour' => $availbale_colour,
-        'colour_pms' => $colour_pms, 
-        'specification' => $specification,
-        'images' => $images,
-        'shipping_cost' => $shipping_cost,
-        'additional_info' => $additional_info,
-        'files' => $files,
-        'product_url' => $product_url,
-        'pricing' => $pricing,
-        'available_country' => $availableCountry,
-        'promotion_tag' => $promo,
-        'available_stock' => $available_stock,
-        'lowprice_au' => $lowest_priceAU,
-        'lowprice_nz' => $lowest_priceNZ
-      ]
+  'input' => [
+      'supplierID' => '2d4a265b-de20-40c4-82f7-421253a4ec94',
+      'categorychildID' => '85b549dd-ba7f-4b5c-b0e2-d5c184c7bf9e',
+      'name' => $product_name,
+      'code' => $row['Product_Code'],
+      'is_discontinued' =>$product_is_discontinued,
+      'full_description' =>$full_description,
+      'available_branding' =>$brandingOptions,
+      'lowest_leadtime' =>$lowest_leadtime,
+      'keywords' =>$keywords,
+      'feature_tags' =>$Feature,
+      'available_leadtime' =>$avaliable_leadtime,
+      'related_product' => $related_product_code,
+      'packaging' => $packaging,
+      'supplier_categories' => $supplier_categories,
+      'short_description' => $short_description,
+      'keywords' => $keywords,
+      'available_colour' => $availbale_colour,
+      'colour_pms' => $colour_pms, 
+      'specification' => $specification,
+      'images' => $images,
+      'shipping_cost' => $shipping_cost,
+      'additional_info' => $additional_info,
+      'files' => $files,
+      'product_url' => $product_url,
+      'pricing' => $pricing,
+      'available_country' => $availableCountry,
+      'promotion_tag' => $promo,
+      'available_stock' => $available_stock,
+      'lowprice_au' => $lowest_priceAU,
+      'lowprice_nz' => $lowest_priceNZ
+    ]
 ];
-
-
 $payload = json_encode(['query' => $query, 'variables' => $variables]);
 
 $ch = curl_init($apiUrl);
@@ -150,7 +151,7 @@ curl_close($ch);
 
 if ($error) {
   echo "cURL Error: $error";
-  exit;
+  continue;
 }
 
 //把id和code放到json
@@ -173,10 +174,11 @@ if (isset($parsedResponse['data']['createProduct']['id'])) {
   // Save back to file
   file_put_contents($filename, json_encode($existingData, JSON_PRETTY_PRINT));
   
-  echo "Product ID saved successfully!";
+  echo $row['Product_Code']. "saved successfully!\n";
 } else {
   echo "Error in creating product or retrieving ID.";
   print_r($parsedResponse);
+}
 }
 
 ?>
