@@ -91,6 +91,7 @@ $promo = isset($productDetails['Promo']) ? $productDetails['Promo'] : null;
 $available_stock = isset($productDetails['available_stock']) ? $productDetails['available_stock'] : 0;
 $lowest_priceAU = isset($productDetails['lowest_price']['lowest_priceAU']) ? $productDetails['lowest_price']['lowest_priceAU'] : 0;
 $lowest_priceNZ = isset($productDetails['lowest_price']['lowest_priceNZ']) ? $productDetails['lowest_price']['lowest_priceNZ'] : 0;
+$avaliable_moq = isset($productDetails['avaliable_moq']) ? $productDetails['avaliable_moq'] : 0;
 
 $packaging = isset($productDetails['packaging']) ? json_encode($productDetails['packaging']) : "null";
 $supplier_categories = isset($productDetails['supplier_categories']) ? json_encode($productDetails['supplier_categories']) : "null";
@@ -133,7 +134,8 @@ $variables = [
       'promotion_tag' => $promo,
       'available_stock' => $available_stock,
       'lowprice_au' => $lowest_priceAU,
-      'lowprice_nz' => $lowest_priceNZ
+      'lowprice_nz' => $lowest_priceNZ,
+      'available_moq' => $avaliable_moq
     ]
 ];
 $payload = json_encode(['query' => $query, 'variables' => $variables]);

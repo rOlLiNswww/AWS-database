@@ -299,6 +299,7 @@ $outputData['lowest_price'] = $lowestPrice;
 $hasAUPricing = array_key_exists("pricetable_au", $jsonData);
 $hasNZPricing = array_key_exists("pricetable_nz", $jsonData);
 
+$outputData['avaliable_moq'] = $jsonData['pricetable_au'][0]['moq'];
 
 
 // Determine available_leadtime based on pricing data
