@@ -65,12 +65,12 @@ mutation CreateProduct(
 
 $pdo = new PDO($dsn, $user, $pass);
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-$stmt = $pdo->query('SELECT Product_Code,Product_Details,Supplier_Name FROM products WHERE Product_Code = "BOH001"'); // 修改表名和条件
+$stmt = $pdo->query('SELECT Product_Code,Product_Details,Supplier_Name FROM products WHERE Product_Code = "JB006"'); // 修改表名和条件
 $row = $stmt->fetch();
 //提取json中的数据
 $productDetails = json_decode($row['Product_Details'], true);
 $product_name = isset($productDetails['product_name']) ? $productDetails['product_name'] : null;
-$product_is_discontinued = isset($productDetails['product_is_discontinued']) ? $productDetails['product_is_discontinued'] : null;
+$product_is_discontinued = isset($productDetails['product_is_discontinued']) ? $productDetails['product_is_discontinued'] : false;
 $full_description = isset($productDetails['full_description']) ? $productDetails['full_description'] : null;
 $available_branding = isset($productDetails['available_branding']) ? $productDetails['available_branding'] : null;
 $brandingOptions = explode(',', $available_branding);
@@ -79,15 +79,26 @@ $lowest_leadtime = isset($productDetails['lowest_leadtime']) ? $productDetails['
 $keywords = isset($productDetails['keywords']) ? $productDetails['keywords'] : null;
 $Feature = isset($productDetails['Feature']) ? $productDetails['Feature'] : null;
 $avaliable_leadtime = isset($productDetails['avaliable_leadtime']) ? $productDetails['avaliable_leadtime'] : null;
-
+$short_description = isset($productDetails['short_description']) ? $productDetails['short_description'] : "null";
+$keywords = isset($productDetails['keywords']) ? $productDetails['keywords'] : "null";
+$availbale_colour = isset($productDetails['availbale_colour']) ? $productDetails['availbale_colour'] : null;
 $related_product_code = isset($productDetails['related_product_code']) ? $productDetails['related_product_code'] : "null";
-if ($related_product_code === null) {
-    $related_product_code = "null";
-}
+$product_url = isset($productDetails['product_url']) ? $productDetails['product_url'] : "null";
+$availableCountry = isset($productDetails['availableCountry']) ? $productDetails['availableCountry'] : "null";
+$promo = isset($productDetails['Promo']) ? $productDetails['Promo'] : "null";
+$available_stock = isset($productDetails['available_stock']) ? $productDetails['available_stock'] : 0;
+$lowest_priceAU = isset($productDetails['lowest_price']['lowest_priceAU']) ? $productDetails['lowest_price']['lowest_priceAU'] : 0;
+$lowest_priceNZ = isset($productDetails['lowest_price']['lowest_priceNZ']) ? $productDetails['lowest_price']['lowest_priceNZ'] : 0;
 
-$packaging = isset($productDetails['packaging']) ? json_encode($productDetails['packaging']) : null;
-
-$supplier_categories = isset($productDetails['supplier_categories']) ? json_encode($productDetails['supplier_categories']) : null;
+$packaging = isset($productDetails['packaging']) ? json_encode($productDetails['packaging']) : "null";
+$supplier_categories = isset($productDetails['supplier_categories']) ? json_encode($productDetails['supplier_categories']) : "null";
+$colour_pms = isset($productDetails['colour_pms']) ? json_encode($productDetails['colour_pms']) : "null";
+$specification = isset($productDetails['specification']) ? json_encode($productDetails['specification']) : "null";
+$images = isset($productDetails['images']) ? json_encode($productDetails['images']) : "null";
+$shipping_cost = isset($productDetails['shipping_cost']) ? json_encode($productDetails['shipping_cost']) : "null";
+$additional_info = isset($productDetails['additional_info']) ? json_encode($productDetails['additional_info']) : "null";
+$files = isset($productDetails['files']) ? json_encode($productDetails['files']) : "null";
+$pricing = isset($productDetails['pricing']) ? json_encode($productDetails['pricing']) : "null";
 $variables = [
     'input' => [
         'supplierID' => '2d4a265b-de20-40c4-82f7-421253a4ec94',
@@ -103,8 +114,24 @@ $variables = [
         'available_leadtime' =>$avaliable_leadtime,
         'related_product' => $related_product_code,
         'packaging' => $packaging,
-        'supplier_categories' => $supplier_categories
-    ]
+        'supplier_categories' => $supplier_categories,
+        'short_description' => $short_description,
+        'keywords' => $keywords,
+        'available_colour' => $availbale_colour,
+        'colour_pms' => $colour_pms, 
+        'specification' => $specification,
+        'images' => $images,
+        'shipping_cost' => $shipping_cost,
+        'additional_info' => $additional_info,
+        'files' => $files,
+        'product_url' => $product_url,
+        'pricing' => $pricing,
+        'available_country' => $availableCountry,
+        'promotion_tag' => $promo,
+        'available_stock' => $available_stock,
+        'lowprice_au' => $lowest_priceAU,
+        'lowprice_nz' => $lowest_priceNZ
+      ]
 ];
 
 

@@ -4,7 +4,7 @@ require 'db_connection.php';
 function insertDecoration($jsonData) {
 
 global $pdo;
-// 初始化
+
 $decorations = isset($jsonData['decorations']) ? $jsonData['decorations'] : array();
 $groupedByNames = array();
 $availableBranding = isset($jsonData['available_branding']) ? $jsonData['available_branding'] : null;

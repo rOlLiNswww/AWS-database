@@ -41,8 +41,11 @@ if (isset($jsonData['tag'])) {
     }
     if (count($promoTags) > 0) {
         $outputData['Promo'] = implode(', ', $promoTags);
+    } else {
+        $outputData['Promo'] = null;
     }
 }
+
 
 if (isset($jsonData['tag'])) {
     $featureTags = [];
@@ -59,7 +62,36 @@ if (isset($jsonData['tag'])) {
 
 $outputData['keywords'] = $jsonData['keywords'];
 
-$outputData['availbale_colour'] = $jsonData['availbale_colour'];
+$availableColour = $jsonData['availbale_colour'];
+
+if ($availableColour === "Range of Colours") {
+    $outputData['availbale_colour'] = [
+        "WHITE",
+        "YELLOW",
+        "ORANGE",
+        "RED",
+        "PURPLE",
+        "PINK",
+        "GREEN",
+        "BLUE",
+        "BLACK"
+    ];
+} else {
+    $pattern = '/\([^)]*\)|\|/';
+    $cleanedColour = preg_replace($pattern, '|', $availableColour);
+    $colourArray = array_filter(explode("|", $cleanedColour), 'trim'); 
+
+    // 去除可能的空值
+    $colourArray = array_filter($colourArray, function($value) { return trim($value) !== ''; });
+
+    // 将颜色名称全部大写并替换空格为下划线
+    $outputData['availbale_colour'] = array_values(array_map(function ($colour) {
+        return str_replace(' ', '_', strtoupper(trim($colour)));
+    }, $colourArray));
+
+
+}
+
 
 $availableBranding = $jsonData['available_branding'];
 if ($availableBranding === "") {
@@ -201,9 +233,9 @@ if (isset($jsonData['pricetable_nz'])) {
 }
 
 // Update pricetable arrays in the output JSON
-$outputData['AU'] = $newPricetableAU;
+$outputData['pricing']['AU'] = $newPricetableAU;
 if ($newPricetableNZ) {
-    $outputData['NZ'] = $newPricetableNZ;
+    $outputData['pricing']['NZ'] = $newPricetableNZ;
 }
 
 $lowestPriceAU = null;
@@ -237,16 +269,17 @@ if (isset($jsonData['pricetable_nz'])) {
 }
 
 $onHandValues = array_column($jsonData['inventory'], 'onHand');
-// 找到最小的 "onHand" 值
 
+// 找到最小的 "onHand" 值
 if (!empty($onHandValues)) {
     $minOnHand = min($onHandValues);
+    $minOnHand = round($minOnHand);  // 四舍五入到最近的整数
 } else {
     $minOnHand = 0; // 设置一个默认最小值
 }
 
-
 $outputData['available_stock'] = $minOnHand;
+
 
 
 $lowestPrice = [
@@ -264,8 +297,9 @@ $hasAUPricing = array_key_exists("pricetable_au", $jsonData);
 $hasNZPricing = array_key_exists("pricetable_nz", $jsonData);
 
 
+
 // Determine available_leadtime based on pricing data
-$availableCountry = $hasNZPricing ? "AU, NZ" : ($hasAUPricing ? "AU" : "");
+$availableCountry = $hasNZPricing ? ["AU", "NZ"] : ($hasAUPricing ? "AU" : "");
 
 // Add available_leadtime to the output JSON
 $outputData['availableCountry'] = $availableCountry;
