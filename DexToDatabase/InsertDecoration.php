@@ -9,7 +9,7 @@ $decorations = isset($jsonData['decorations']) ? $jsonData['decorations'] : arra
 $groupedByNames = array();
 $availableBranding = isset($jsonData['available_branding']) ? $jsonData['available_branding'] : null;
 if ($availableBranding === "") {
-    $availableBranding = "Screen Print";
+    $availableBranding = "SCREEN_PRINT";
 }
 $imprintTypes = $availableBranding ? array_map('trim', explode(',', $availableBranding)) : array();
 
@@ -25,8 +25,17 @@ foreach ($decorations as $decoration) {
     $Imprint_Area = $decoration['Size'];
     $Product_Code = $jsonData['product_code'];
     $Supplier_Name = $jsonData['supplier_code'];
-    $imprintType = array_shift($imprintTypes);
     
+    $imprintType = array_shift($imprintTypes);
+   
+    if ($imprintType !== null) {
+        $imprintType = strtoupper(str_replace(' ', '_', $imprintType));
+        if ($imprintType === 'DIRECT_DIGITAL') {
+            $imprintType = 'DIGITAL_DIRECT';
+        }
+    }
+    
+
     if ($imprintType === null) {
         $imprintType = $previousImprintType;
     } else {
@@ -37,7 +46,9 @@ foreach ($decorations as $decoration) {
     $hasNZPricing = array_key_exists("pricetable_nz", $jsonData);
     
     // Determine available_leadtime based on pricing data
-    $availableCountry = $hasNZPricing ? "AU, NZ" : ($hasAUPricing ? "AU" : "");
+    $availableCountry = $hasNZPricing ? ["AU", "NZ"] : ($hasAUPricing ? ["AU"] : []);
+    $avaliableCountryJson = json_encode($availableCountry);
+
 
 
     if (!isset($groupedByNames[$decorationName])) {
@@ -56,7 +67,7 @@ foreach ($decorations as $decoration) {
             'Avaliable_Country' => $availableCountry
         );
         
-        if ($availableCountry !== 'AU') {
+        if (in_array('NZ', $availableCountry)) {
             $groupedByNames[$decorationName]['NZ'] = array(
                 'moq_surcharge' => null,
                 'setup_new' => $decoration['new_setup_nz'],
@@ -98,7 +109,7 @@ foreach ($groupedByNames as $name => $data) {
         $data['Product_Code'],
         $data['Supplier_Name'],
         $data['Imprint_Type'],
-        $data['Avaliable_Country'],
+        $avaliableCountryJson,
         json_encode(array('AU' => $data['AU'], 'NZ' => $nzData))
 
     );

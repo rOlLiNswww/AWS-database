@@ -103,8 +103,17 @@ if ($availableBranding === "") {
 if (strpos($availableBranding, "Direct Digital") !== false) {
     $availableBranding = str_replace("Direct Digital", "Digital Direct", $availableBranding);
 }
-$availableBranding = str_replace(' ', '_', strtoupper($availableBranding));
-$outputData['available_branding'] = $availableBranding;
+
+// 使用 explode() 将逗号分隔的字符串分割为数组
+$brandingOptions = explode(',', $availableBranding);
+
+// 使用 array_map 来处理数组元素，将空格替换为下划线并转换为大写
+$brandingOptions = array_map(function ($option) {
+    return str_replace(' ', '_', strtoupper(trim($option)));
+}, $brandingOptions);
+
+$outputData['available_branding'] = $brandingOptions;
+
 
 
 if (isset($jsonData['availbale_colour'])) {

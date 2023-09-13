@@ -75,8 +75,6 @@ $product_name = isset($productDetails['product_name']) ? $productDetails['produc
 $product_is_discontinued = isset($productDetails['product_is_discontinued']) ? $productDetails['product_is_discontinued'] : false;
 $full_description = isset($productDetails['full_description']) ? $productDetails['full_description'] : null;
 $available_branding = isset($productDetails['available_branding']) ? $productDetails['available_branding'] : null;
-$brandingOptions = explode(',', $available_branding);
-$brandingOptions = array_map('trim', $brandingOptions);
 $lowest_leadtime = isset($productDetails['lowest_leadtime']) ? $productDetails['lowest_leadtime'] : null;
 $keywords = isset($productDetails['keywords']) ? $productDetails['keywords'] : null;
 $Feature = isset($productDetails['Feature']) ? $productDetails['Feature'] : null;
@@ -111,7 +109,7 @@ $variables = [
       'code' => $row['Product_Code'],
       'is_discontinued' =>$product_is_discontinued,
       'full_description' =>$full_description,
-      'available_branding' =>$brandingOptions,
+      'available_branding' =>$available_branding,
       'lowest_leadtime' =>$lowest_leadtime,
       'keywords' =>$keywords,
       'feature_tags' =>$Feature,
@@ -176,7 +174,7 @@ if (isset($parsedResponse['data']['createProduct']['id'])) {
   // Save back to file
   file_put_contents($filename, json_encode($existingData, JSON_PRETTY_PRINT));
   
-  echo $row['Product_Code']. "saved successfully!\n";
+  echo $row['Product_Code']. " saved successfully!\n";
 } else {
   echo "Error in creating product or retrieving ID.";
   print_r($parsedResponse);
