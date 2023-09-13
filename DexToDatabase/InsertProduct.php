@@ -135,6 +135,7 @@ $packaging = array(
     "packaging_type" => isset($jsonData["packaging_type"]) ? $jsonData["packaging_type"] : "",
     "carton_length" => isset($jsonData["carton_length"]) ? $jsonData["carton_length"] : "",
     "carton_width" => isset($jsonData["carton_width"]) ? $jsonData["carton_width"] : "",
+    "carton_height" => isset($jsonData["carton_height"]) ? (string)$jsonData["carton_height"] : "",
     "carton_weight" => isset($jsonData["carton_weight"]) ? $jsonData["carton_weight"] : "",
     "carton_qty" => isset($jsonData["carton_qty"]) ? $jsonData["carton_qty"] : ""
 );
