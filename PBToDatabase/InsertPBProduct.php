@@ -11,7 +11,7 @@ $outputData = array();
 
 $outputData['product_code'] = $jsonData['Product_Code'];
 $outputData['product_name'] = $jsonData['Name'];
-$outputData['related_product_code'] = $jsonData['Linked_Product'];
+$outputData['related_product_code'] = ($jsonData['Linked_Product'] === "") ? "null" : $jsonData['Linked_Product'];
 $outputData['product_is_discontinued'] = false;
 
 $result = [];
@@ -93,12 +93,17 @@ if ($availableColour === "Natural Bamboo and Borosilicate Glass") {
 // Transform each element to uppercase, replace spaces with underscores, and convert "GRAY" to "GREY"
 $Colour = array_map(function ($color) {
     $color = str_replace(' ', '_', strtoupper($color));
-    return str_replace('GRAY', 'GREY', $color);
+    $color = str_replace('GRAY', 'GREY', $color);
+
+    if (strpos($color, 'BRASS') !== false) {
+        $color = str_replace('BRASS', 'BRONZE', $color);
+    }
+    
+    return $color;
 }, $Colour);
 
+
 $outputData['availbale_colour'] = $Colour;
-
-
 
 $branding = $jsonData['Branding'];
 $brandingArray = explode(' | ', $branding);
