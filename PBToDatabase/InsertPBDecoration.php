@@ -22,12 +22,18 @@ function insertPBDecoration($jsonData) {
         $keyPrefix = "productImprintmethod{$i}";
 
         if (isset($decorations["{$keyPrefix}Des"]) && $decorations["{$keyPrefix}Des"] !== null) {
-            $imprint = [];
 
             $description = $decorations["{$keyPrefix}Des"];
             $maxcolour = $decorations["{$keyPrefix}Max"];
             $cost = $decorations["{$keyPrefix}Cost"];
             $imprint_area = $decorations["{$keyPrefix}Size"];
+            if ($description == 'Laser Engraving') {
+                $description = 'Laser Engrave';
+            }
+            if ($description == 'Wrap Laser Engraving') {
+                $description = 'Wrap Laser Engrave';
+            }
+            $imprint_type = strtoupper(str_replace(' ', '_', $description));
 
             $service = [
                 "AU" => [
@@ -50,13 +56,13 @@ function insertPBDecoration($jsonData) {
 
             $sql = 'INSERT INTO Decoration (Decoration_Name, Imprint_Area, Product_Code, Supplier_Name, Imprint_Type, Max_Colour,Services) VALUES (?, ?, ?, ?, ?,?, ?)';
             $stmt = $pdo->prepare($sql);
-            $values = [$description, $imprint_area, $jsonData['Product_Code'], "PB", $description, $maxcolour, json_encode($service)];
+            $values = [$description, $imprint_area, $jsonData['Product_Code'], "PB", $imprint_type, $maxcolour, json_encode($service)];
 
             if (!$stmt->execute($values)) {
                 echo "Error inserting data.";
             }
 
-            $imprintResults[] = $imprint;
+            
         } else {
             break;
         }

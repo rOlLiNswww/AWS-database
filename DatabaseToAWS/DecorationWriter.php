@@ -71,7 +71,6 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
     $response = curl_exec($ch);
-
     $error = curl_error($ch);
     curl_close($ch);
 
