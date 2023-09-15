@@ -28,9 +28,14 @@ mutation CreateInventory(
   }
 ';
 
+
 $pdo = new PDO($dsn, $user, $pass);
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-$stmt = $pdo->query('SELECT Name,Code,Colour_Hex,On_Hand,On_Order,Product_Code,Incoming,Avaliable_Country,Supplier_Name,Colour_Pms FROM Inventory');
+$stmt = $pdo->query('SELECT i.Name, i.Code, i.Colour_Hex, i.On_Hand, i.On_Order, i.Product_Code, i.Incoming, i.Avaliable_Country, i.Supplier_Name, i.Colour_Pms, p.Status as Product_Status 
+                     FROM Inventory i
+                     LEFT JOIN Products p ON i.Product_Code = p.Product_Code
+');
+
 
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
@@ -52,6 +57,8 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             }
         }
     }
+    $productStatus = $row['Product_Status'];
+    if ($productStatus == 'Insert') {
     $variables = [
     'input' => [
         'name' =>$row['Name'],
@@ -67,6 +74,11 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         ]
     ];
     $payload = json_encode(['query' => $query, 'variables' => $variables]);
+    }else{
+        
+        continue;
+       }
+
 
     $ch = curl_init($apiUrl);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

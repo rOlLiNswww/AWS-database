@@ -3,7 +3,7 @@ require 'db_connection.php';
 require 'vendor/autoload.php';
 require 'UserAuth.php';
 
-$query = '
+$Insertquery = '
 mutation CreateProduct(
     $input: CreateProductInput!
     $condition: ModelProductConditionInput
@@ -63,9 +63,72 @@ mutation CreateProduct(
   }
 ';
 
+$Updatequery='
+mutation UpdateProduct(
+  $input: UpdateProductInput!
+  $condition: ModelProductConditionInput
+) {
+  updateProduct(input: $input, condition: $condition) {
+    id
+    code
+    name
+    related_product
+    is_discontinued
+    supplier_categories
+    short_description
+    full_description
+    feature_tags
+    keywords
+    available_colour
+    available_branding
+    colour_pms
+    specification
+    packaging
+    shipping_cost
+    images
+    available_leadtime
+    lowest_leadtime
+    additional_info
+    files
+    Inventories {
+      nextToken
+      __typename
+    }
+    Decorations {
+      nextToken
+      __typename
+    }
+    product_url
+    available_country
+    pricing
+    available_moq
+    promotion_tag
+    categorychildID
+    AddOns {
+      nextToken
+      __typename
+    }
+    supplierID
+    available_stock
+    lowprice_au
+    lowprice_nz
+    lowprice_us
+    lowprice_uk
+    lowprice_eu
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+';
+
+
+
+
 $pdo = new PDO($dsn, $user, $pass);
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-$stmt = $pdo->query('SELECT Product_Code,Product_Details,Supplier_Name FROM products');
+$stmt = $pdo->query('SELECT Product_Code,Product_Details,Supplier_Name,Status FROM products');
 
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
@@ -100,6 +163,8 @@ $shipping_cost = isset($productDetails['shipping_cost']) ? json_encode($productD
 $additional_info = isset($productDetails['additional_info']) ? json_encode($productDetails['additional_info']) : "null";
 $files = isset($productDetails['files']) ? json_encode($productDetails['files']) : "null";
 $pricing = isset($productDetails['pricing']) ? json_encode($productDetails['pricing']) : "null";
+
+
 
 $variables = [
   'input' => [
@@ -136,7 +201,69 @@ $variables = [
       'available_moq' => $avaliable_moq
     ]
 ];
-$payload = json_encode(['query' => $query, 'variables' => $variables]);
+
+if ($row['Status'] == 'Insert') {
+  $payload = json_encode(['query' => $Insertquery, 'variables' => $variables]);
+} elseif ($row['Status'] == 'Updated') {
+
+  $jsonFile = 'product_ids.json';
+  $jsonData = file_get_contents($jsonFile);
+  if ($jsonData === false) {
+      echo '无法读取 JSON 文件';
+  } else {
+      $productData = json_decode($jsonData, true);
+      if ($productData === null) {
+          echo '解码 JSON 数据失败';
+      } else {
+          // 要查找的键
+          $keyToFind = $row['Product_Code'];
+          if (array_key_exists($keyToFind, $productData)) {
+              $foundid = $productData[$keyToFind];
+          } else {
+              // 处理未找到的情况，如果需要的话
+          }
+      }
+  }
+  $variables2 = [
+    'input' => [
+      'id' => $foundid,
+      'name' => $product_name,
+      'code' => $row['Product_Code'],
+      'is_discontinued' =>$product_is_discontinued,
+      'full_description' =>$full_description,
+      'available_branding' =>$available_branding,
+      'lowest_leadtime' =>$lowest_leadtime,
+      'keywords' =>$keywords,
+      'feature_tags' =>$Feature,
+      'available_leadtime' =>$avaliable_leadtime,
+      'related_product' => $related_product_code,
+      'packaging' => $packaging,
+      'supplier_categories' => $supplier_categories,
+      'short_description' => $short_description,
+      'keywords' => $keywords,
+      'available_colour' => $availbale_colour,
+      'colour_pms' => $colour_pms, 
+      'specification' => $specification,
+      'images' => $images,
+      'shipping_cost' => $shipping_cost,
+      'additional_info' => $additional_info,
+      'files' => $files,
+      'product_url' => $product_url,
+      'pricing' => $pricing,
+      'available_country' => $availableCountry,
+      'promotion_tag' => $promo,
+      'available_stock' => $available_stock,
+      'lowprice_au' => $lowest_priceAU,
+      'lowprice_nz' => $lowest_priceNZ,
+      'available_moq' => $avaliable_moq
+      ]
+  ];
+ $payload = json_encode(['query' => $Updatequery, 'variables' => $variables2]);
+}elseif($row['Status'] == 'Normal'){
+
+continue;
+}
+
 
 $ch = curl_init($apiUrl);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -154,9 +281,14 @@ if ($error) {
   continue;
 }
 
+// $updateStatusSQL = "UPDATE Products SET Status = 'Normal' WHERE Product_Code = :productCode";
+// $updateStatusStmt = $pdo->prepare($updateStatusSQL);
+// $updateStatusStmt->bindParam(':productCode', $row['Product_Code']);
+// $updateStatusStmt->execute();
+
 //把id和code放到json
 $parsedResponse = json_decode($response, true);
-if (isset($parsedResponse['data']['createProduct']['id'])) {
+if (($row['Status'] == 'Insert') &&(isset($parsedResponse['data']['createProduct']['id']))) {
   $productId = $parsedResponse['data']['createProduct']['id'];
   $productCode = $row['Product_Code'];
   
@@ -173,11 +305,12 @@ if (isset($parsedResponse['data']['createProduct']['id'])) {
   
   // Save back to file
   file_put_contents($filename, json_encode($existingData, JSON_PRETTY_PRINT));
+
+  
   
   echo $row['Product_Code']. " saved successfully!\n";
 } else {
-  echo "Error in creating product or retrieving ID.";
-  print_r($parsedResponse);
+  
 }
 }
 

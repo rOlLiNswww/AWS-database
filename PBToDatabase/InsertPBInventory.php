@@ -1,7 +1,7 @@
 <?php
 require 'db_connection.php';
 
-function insertPBInventory($jsonData) {
+function insertPBInventory($jsonData,$Status) {
 
 global $pdo;
 $inventoryData = isset($jsonData['Inventory'][0]) ? $jsonData['Inventory'] : array($jsonData['Inventory']);
@@ -29,10 +29,18 @@ foreach ($inventoryData as $item) {
     $productCode = $jsonData['Product_Code'];
     $supplierName = "PB";
 
-    $sql = 'INSERT INTO Inventory (Code, Name, Colour_Pms, On_Hand, Incoming, Product_Code, Supplier_Name, On_Order) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-    $stmt = $pdo->prepare($sql);
-    $values = [$itemNumber, $itemName, $colour, $onHand, $incomingStock, $productCode, $supplierName, $onOrder];
-
+    if ($Status == "Insert") {
+        $sql = 'INSERT INTO Inventory (Code, Name, Colour_Pms, On_Hand, Incoming, Product_Code, Supplier_Name, On_Order) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+        $stmt = $pdo->prepare($sql);
+        $values = [$itemNumber, $itemName, $colour, $onHand, $incomingStock, $productCode, $supplierName, $onOrder];
+    } elseif ($Status == "Updated") {
+        $sql = 'UPDATE Inventory SET Name = ?, Colour_Pms = ?, On_Hand = ?, Incoming = ?, Supplier_Name = ?, On_Order = ? WHERE Code = ? AND Product_Code = ?';
+        $stmt = $pdo->prepare($sql);
+        $values = [$itemName, $colour, $onHand, $incomingStock, $supplierName, $onOrder, $itemNumber, $productCode];
+    } else {
+        // 可能是未知的状态，所以我们终止循环
+        continue;
+    }
     if ($stmt->execute($values)) {
     } else {
         echo "Error inserting data.";

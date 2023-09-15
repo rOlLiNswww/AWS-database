@@ -2,7 +2,7 @@
 require 'db_connection.php';
 
 
-function insertPBProduct($jsonData) {
+function insertPBProduct($jsonData,$Status) {
 
 global $pdo;
 
@@ -332,10 +332,17 @@ $date->setTimezone($timezone);
 $formattedDate = $date->format('Y-m-d H:i:s'); 
 
 
-// 将处理过的数据插入到数据库
-$sql = 'INSERT INTO Products (Product_Code, Product_Details,Supplier_Name,Last_Modified) VALUES (?,?,?,?)';
-$stmt = $pdo->prepare($sql);
-$values = [$jsonData["Product_Code"],$outputDataJson, "PB",$formattedDate];
+
+if($Status == "Insert"){
+    $sql = 'INSERT INTO Products (Product_Code, Product_Details,Supplier_Name,Last_Modified,Status) VALUES (?,?,?,?,?)';
+    $stmt = $pdo->prepare($sql);
+    $values = [$jsonData["Product_Code"],$outputDataJson, "PB",$formattedDate,$Status];
+}
+elseif($Status == "Updated"){
+    $sql = 'UPDATE Products SET Product_Details = ?, Supplier_Name = ?, Last_Modified = ?, Status = ? WHERE Product_Code = ?';
+    $stmt = $pdo->prepare($sql);
+    $values = [$outputDataJson, "PB", $formattedDate, $Status, $jsonData["Product_Code"]];
+}
 
 
 if ($stmt->execute($values)) {

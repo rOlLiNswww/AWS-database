@@ -26,9 +26,34 @@ mutation CreateDecoration(
 }
 ';
 
+$query2 = '
+mutation UpdateDecoration(
+    $input: UpdateDecorationInput!
+    $condition: ModelDecorationConditionInput
+  ) {
+    updateDecoration(input: $input, condition: $condition) {
+      id
+      imprint_type
+      imprint_area
+      productID
+      available_country
+      services
+      supplierID
+      decoration_name
+      max_colour
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+  }
+';
+
 $pdo = new PDO($dsn, $user, $pass);
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-$stmt = $pdo->query('SELECT Product_Code,Decoration_ID,Imprint_Type,Imprint_Area,Avaliable_Country,Services,Supplier_Name,Max_Colour,Decoration_Name FROM Decoration');
+$stmt = $pdo->query('SELECT d.Product_Code, d.Decoration_ID, d.Imprint_Type, d.Imprint_Area, d.Avaliable_Country, d.Services, d.Supplier_Name, d.Max_Colour, d.Decoration_Name, p.Status as Product_Status 
+                     FROM Decoration d
+                     LEFT JOIN Products p ON d.Product_Code = p.Product_Code');
 
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
@@ -50,20 +75,36 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             }
         }
     }
-    $variables = [
-    'input' => [
-        'imprint_type' =>$row['Imprint_Type'],
-        'imprint_area' =>$row['Imprint_Area'],
-        'productID' => $foundid,
-        'available_country' => json_decode($row['Avaliable_Country'], true),
-        'services' => $row['Services'],
-        'supplierID' => '2d4a265b-de20-40c4-82f7-421253a4ec94',
-        'decoration_name'=>$row['Decoration_Name'],
-        'max_colour'=>$row['Max_Colour']
-        ]
-    ];
-    $payload = json_encode(['query' => $query, 'variables' => $variables]);
 
+    $productStatus = $row['Product_Status'];
+
+    
+   
+       
+          
+    if ($productStatus == 'Insert') {
+
+        $variables = [
+            'input' => [
+                'imprint_type' =>$row['Imprint_Type'],
+                'imprint_area' =>$row['Imprint_Area'],
+                'productID' => $foundid,
+                'available_country' => json_decode($row['Avaliable_Country'], true),
+                'services' => $row['Services'],
+                'supplierID' => '2d4a265b-de20-40c4-82f7-421253a4ec94',
+                'decoration_name'=>$row['Decoration_Name'],
+                'max_colour'=>$row['Max_Colour']
+                ]
+            ];
+            $payload = json_encode(['query' => $query, 'variables' => $variables]);
+        
+    } else{
+        
+        continue;
+       }
+
+   
+ 
     $ch = curl_init($apiUrl);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_POST, true);

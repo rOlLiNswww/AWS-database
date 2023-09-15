@@ -2,7 +2,7 @@
 require 'db_connection.php';
 
 
-function insertProduct($jsonData) {
+function insertProduct($jsonData,$Status) {
 
 global $pdo;
 
@@ -321,10 +321,19 @@ $outputData['availableCountry'] = $availableCountry;
 
 $outputDataJson = json_encode($outputData, JSON_UNESCAPED_SLASHES);
 
+
+if($Status == "Insert"){
+    $sql = 'INSERT INTO Products (Product_Code, Product_Details,Supplier_Name,Last_Modified,Status) VALUES (?,?,?,?,?)';
+    $stmt = $pdo->prepare($sql);
+    $values = [$jsonData["product_code"],$outputDataJson, $jsonData["supplier_code"],$jsonData["lastUpdated"],$Status];
+}
+elseif($Status == "Updated"){
+    $sql = 'UPDATE Products SET Product_Details = ?, Supplier_Name = ?, Last_Modified = ?, Status = ? WHERE Product_Code = ?';
+    $stmt = $pdo->prepare($sql);
+    $values = [$outputDataJson, $jsonData["supplier_code"], $jsonData["lastUpdated"], $Status, $jsonData["product_code"]];
+}
+
 // 将处理过的数据插入到数据库
-$sql = 'INSERT INTO Products (Product_Code, Product_Details,Supplier_Name,Last_Modified) VALUES (?,?,?,?)';
-$stmt = $pdo->prepare($sql);
-$values = [$jsonData["product_code"],$outputDataJson, $jsonData["supplier_code"],$jsonData["lastUpdated"]];
 
 
 if ($stmt->execute($values)) {

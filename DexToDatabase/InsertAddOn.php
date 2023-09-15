@@ -1,7 +1,7 @@
 <?php
 require 'db_connection.php';
 
-function insertAddon($jsonData) {
+function insertAddon($jsonData, $Status) {
 
 global $pdo;
 if (isset($jsonData['addons'])) {
@@ -36,9 +36,18 @@ foreach ($jsonData['addons'] as $item) {
     $supplierName = $jsonData['supplier_code'];
     
 
-    $sql = 'INSERT INTO AddOn (Name,Cost,Product_Code,Supplier_Name,Decoration) VALUES (?,?,?,?,?)';
-    $stmt = $pdo->prepare($sql);
-    $values = [$itemName,$cost,$productCode,$supplierName,$decorationsJson];
+    if ($Status == "Insert") {
+        $sql = 'INSERT INTO AddOn (Name, Cost, Product_Code, Supplier_Name, Decoration) VALUES (?,?,?,?,?)';
+        $stmt = $pdo->prepare($sql);
+        $values = [$itemName, $cost, $productCode, $supplierName, $decorationsJson];
+    } elseif ($Status == "Updated") {
+        $sql = 'UPDATE AddOn SET Cost = ?, Decoration = ? WHERE Name = ? AND Product_Code = ?';
+        $stmt = $pdo->prepare($sql);
+        $values = [$cost, $decorationsJson, $itemName, $productCode];
+    } else {
+        // Unknown status
+        continue;
+    }
 
 
     if ($stmt->execute($values)) {

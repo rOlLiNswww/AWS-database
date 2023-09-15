@@ -2,7 +2,7 @@
 
 require 'db_connection.php';
 
-function insertPBDecoration($jsonData) {
+function insertPBDecoration($jsonData,$Status) {
 
     global $pdo;
 
@@ -54,10 +54,18 @@ function insertPBDecoration($jsonData) {
                 ];
             }
 
-            $sql = 'INSERT INTO Decoration (Decoration_Name, Imprint_Area, Product_Code, Supplier_Name, Imprint_Type, Max_Colour,Services) VALUES (?, ?, ?, ?, ?,?, ?)';
-            $stmt = $pdo->prepare($sql);
-            $values = [$description, $imprint_area, $jsonData['Product_Code'], "PB", $imprint_type, $maxcolour, json_encode($service)];
-
+            if ($Status == "Insert") {
+                $sql = 'INSERT INTO Decoration (Decoration_Name, Imprint_Area, Product_Code, Supplier_Name, Imprint_Type, Max_Colour,Services) VALUES (?, ?, ?, ?, ?,?, ?)';
+                $stmt = $pdo->prepare($sql);
+                $values = [$description, $imprint_area, $jsonData['Product_Code'], "PB", $imprint_type, $maxcolour, json_encode($service)];
+            } elseif ($Status == "Updated") {
+                $sql = 'UPDATE Decoration SET Imprint_Area = ?, Imprint_Type = ?, Max_Colour = ?, Services = ? WHERE Product_Code = ? AND Decoration_Name = ?';
+                $stmt = $pdo->prepare($sql);
+                $values = [$imprint_area, $imprint_type, $maxcolour, json_encode($service), $jsonData['Product_Code'], $description];
+            } else {
+                // Unknown status
+                continue;
+            }
             if (!$stmt->execute($values)) {
                 echo "Error inserting data.";
             }

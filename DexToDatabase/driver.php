@@ -15,31 +15,39 @@ if (is_array($jsonDataArray)) {
         $jsonLastUpdated = str_replace('T', ' ', $jsonData['lastUpdated']);
        
         // Check if product_code already exists
-        if (!productCodeExists($jsonData['product_code']) || $dbLastModified != $jsonLastUpdated){
-            if (productCodeExists($jsonData['product_code'])) {
-                deleteProductByCode($jsonData['product_code']);
-            }
-            insertProduct($jsonData);
-            insertInventory($jsonData);
-            insertDecoration($jsonData);
+        if (!productCodeExists($jsonData['product_code'])){
+            insertProduct($jsonData,"Insert");
+            insertInventory($jsonData,"Insert");
+            insertDecoration($jsonData,"Insert");
+            insertAddon($jsonData,"Insert");
+            continue;
+        }
+
+        if( $dbLastModified != $jsonLastUpdated){
+        
+            insertProduct($jsonData,"Updated");
+            insertInventory($jsonData,"Updated");
+            insertDecoration($jsonData,"Updated");
+            insertAddon($jsonData,"Updated");
+            continue;
         }
     }
 }
 
-//check delete product
-$inputProductCodes = [];
-foreach ($jsonDataArray as $jsonData) {
-    $inputProductCodes[] = $jsonData['product_code'];
-}
+// //check delete product
+// $inputProductCodes = [];
+// foreach ($jsonDataArray as $jsonData) {
+//     $inputProductCodes[] = $jsonData['product_code'];
+// }
 
-$dbProductCodes = getAllProductCodesFromDatabase($jsonData['supplier_code']);
-$codesToDelete = array_diff($dbProductCodes, $inputProductCodes);
+// $dbProductCodes = getAllProductCodesFromDatabase($jsonData['supplier_code']);
+// $codesToDelete = array_diff($dbProductCodes, $inputProductCodes);
 
 
-foreach ($codesToDelete as $code) {
-    echo  $code . " has been delete!\n";
-    deleteProductByCode($code);
-}
+// foreach ($codesToDelete as $code) {
+//     echo  $code . " has been delete!\n";
+//     deleteProductByCode($code);
+// }
 
 
 ?>

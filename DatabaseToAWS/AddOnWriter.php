@@ -26,7 +26,11 @@ mutation CreateAddOn(
 
 $pdo = new PDO($dsn, $user, $pass);
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-$stmt = $pdo->query('SELECT Name,Avaliable_Country,Cost,Product_Code,Supplier_Name,Decoration FROM AddOn');
+$stmt = $pdo->query('SELECT a.Name, a.Avaliable_Country, a.Cost, a.Product_Code, a.Supplier_Name, a.Decoration, p.Status as Product_Status 
+                     FROM AddOn a
+                     LEFT JOIN Products p ON a.Product_Code = p.Product_Code
+');
+
 
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
@@ -48,6 +52,9 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             }
         }
     }
+
+    $productStatus = $row['Product_Status'];
+    if ($productStatus == 'Insert') {
     $variables = [
     'input' => [
         'name' =>$row['Name'],
@@ -59,7 +66,10 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         ]
     ];
     $payload = json_encode(['query' => $query, 'variables' => $variables]);
-
+    }
+    else{
+        continue;
+       }
     $ch = curl_init($apiUrl);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_POST, true);
