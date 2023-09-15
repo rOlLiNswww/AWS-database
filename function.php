@@ -16,12 +16,12 @@ function productCodeExists($product_code) {
     global $pdo; 
 
     try {
-        $query = "SELECT Product_Code FROM Products WHERE Product_Code = ?";
+        $query = "SELECT Last_Modified FROM Products WHERE Product_Code = ?";
         $stmt = $pdo->prepare($query);
         $stmt->execute([$product_code]);
         
         if ($stmt->rowCount() > 0) {
-            return true; // Product_Code exists
+            return $stmt->fetch(PDO::FETCH_ASSOC)['Last_Modified'];
         } else {
             return false; // Product_Code does not exist
         }

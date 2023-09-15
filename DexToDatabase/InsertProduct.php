@@ -322,9 +322,9 @@ $outputData['availableCountry'] = $availableCountry;
 $outputDataJson = json_encode($outputData, JSON_UNESCAPED_SLASHES);
 
 // 将处理过的数据插入到数据库
-$sql = 'INSERT INTO Products (Product_Code, Product_Details,Supplier_Name) VALUES (?,?,?)';
+$sql = 'INSERT INTO Products (Product_Code, Product_Details,Supplier_Name,Last_Modified) VALUES (?,?,?,?)';
 $stmt = $pdo->prepare($sql);
-$values = [$jsonData["product_code"],$outputDataJson, $jsonData["supplier_code"]];
+$values = [$jsonData["product_code"],$outputDataJson, $jsonData["supplier_code"],$jsonData["lastUpdated"]];
 
 
 if ($stmt->execute($values)) {

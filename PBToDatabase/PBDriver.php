@@ -20,6 +20,28 @@ if (is_array($jsonDataArray)) {
     }
 }
 
+
+if (is_array($jsonDataArray)) {
+    foreach ($jsonDataArray as $jsonData) {
+        $dbLastModified = productCodeExists($jsonData['Product_Code']);
+        $date = new DateTime($jsonData['Last_Modified']);
+        $timezone = new DateTimeZone('Australia/Melbourne');  
+        $date->setTimezone($timezone);
+        $jsonLastUpdated = $date->format('Y-m-d H:i:s'); 
+       
+        // Check if product_code already exists
+        if (!productCodeExists($jsonData['Product_Code']) || $dbLastModified != $jsonLastUpdated){
+            if (productCodeExists($jsonData['Product_Code'])) {
+                deleteProductByCode($jsonData['Product_Code']);
+            }
+            insertPBProduct($jsonData);
+            insertPBInventory($jsonData);
+            insertPBDecoration($jsonData);
+        }
+    }
+}
+
+
 //check delete product
 $inputProductCodes = [];
 foreach ($jsonDataArray as $jsonData) {

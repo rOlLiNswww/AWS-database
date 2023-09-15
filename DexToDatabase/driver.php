@@ -11,8 +11,14 @@ $jsonDataArray = json_decode($data, true);
 
 if (is_array($jsonDataArray)) {
     foreach ($jsonDataArray as $jsonData) {
+        $dbLastModified = productCodeExists($jsonData['product_code']);
+        $jsonLastUpdated = str_replace('T', ' ', $jsonData['lastUpdated']);
+       
         // Check if product_code already exists
-        if (!productCodeExists($jsonData['product_code'])) {
+        if (!productCodeExists($jsonData['product_code']) || $dbLastModified != $jsonLastUpdated){
+            if (productCodeExists($jsonData['product_code'])) {
+                deleteProductByCode($jsonData['product_code']);
+            }
             insertProduct($jsonData);
             insertInventory($jsonData);
             insertDecoration($jsonData);

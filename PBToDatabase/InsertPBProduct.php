@@ -325,10 +325,17 @@ $outputData['availableCountry'] = "AU";
 
 $outputDataJson = json_encode($outputData, JSON_UNESCAPED_SLASHES);
 
+$data = $jsonData["Last_Modified"];
+$date = new DateTime($data);
+$timezone = new DateTimeZone('Australia/Melbourne');
+$date->setTimezone($timezone);
+$formattedDate = $date->format('Y-m-d H:i:s'); 
+
+
 // 将处理过的数据插入到数据库
-$sql = 'INSERT INTO Products (Product_Code, Product_Details,Supplier_Name) VALUES (?,?,?)';
+$sql = 'INSERT INTO Products (Product_Code, Product_Details,Supplier_Name,Last_Modified) VALUES (?,?,?,?)';
 $stmt = $pdo->prepare($sql);
-$values = [$jsonData["Product_Code"],$outputDataJson, "PB"];
+$values = [$jsonData["Product_Code"],$outputDataJson, "PB",$formattedDate];
 
 
 if ($stmt->execute($values)) {
