@@ -124,11 +124,9 @@ mutation UpdateProduct(
 ';
 
 
-
-
 $pdo = new PDO($dsn, $user, $pass);
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-$stmt = $pdo->query('SELECT Product_Code,Product_Details,Supplier_Name,Status FROM products');
+$stmt = $pdo->query('SELECT Product_Code,Product_Details,Supplier_Name,Status,AwsProductID FROM products');
 
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
@@ -163,8 +161,6 @@ $shipping_cost = isset($productDetails['shipping_cost']) ? json_encode($productD
 $additional_info = isset($productDetails['additional_info']) ? json_encode($productDetails['additional_info']) : "null";
 $files = isset($productDetails['files']) ? json_encode($productDetails['files']) : "null";
 $pricing = isset($productDetails['pricing']) ? json_encode($productDetails['pricing']) : "null";
-
-
 
 $variables = [
   'input' => [
@@ -205,28 +201,9 @@ $variables = [
 if ($row['Status'] == 'Insert') {
   $payload = json_encode(['query' => $Insertquery, 'variables' => $variables]);
 } elseif ($row['Status'] == 'Updated') {
-
-  $jsonFile = 'product_ids.json';
-  $jsonData = file_get_contents($jsonFile);
-  if ($jsonData === false) {
-      echo '无法读取 JSON 文件';
-  } else {
-      $productData = json_decode($jsonData, true);
-      if ($productData === null) {
-          echo '解码 JSON 数据失败';
-      } else {
-          // 要查找的键
-          $keyToFind = $row['Product_Code'];
-          if (array_key_exists($keyToFind, $productData)) {
-              $foundid = $productData[$keyToFind];
-          } else {
-              // 处理未找到的情况，如果需要的话
-          }
-      }
-  }
   $variables2 = [
     'input' => [
-      'id' => $foundid,
+      'id' =>  $row['AwsProductID'],
       'name' => $product_name,
       'code' => $row['Product_Code'],
       'is_discontinued' =>$product_is_discontinued,
@@ -264,7 +241,6 @@ if ($row['Status'] == 'Insert') {
 continue;
 }
 
-
 $ch = curl_init($apiUrl);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_POST, true);
@@ -281,33 +257,23 @@ if ($error) {
   continue;
 }
 
-
-//把id和code放到json
 $parsedResponse = json_decode($response, true);
-if (($row['Status'] == 'Insert') &&(isset($parsedResponse['data']['createProduct']['id']))) {
-  $productId = $parsedResponse['data']['createProduct']['id'];
-  $productCode = $row['Product_Code'];
-  
-  // Check if file exists. If not, create a new empty array
-  $filename = "product_ids.json";
-  if (file_exists($filename)) {
-      $existingData = json_decode(file_get_contents($filename), true);
-  } else {
-      $existingData = [];
-  }
-  
-  // Add/Update Product_Code and ID
-  $existingData[$productCode] = $productId;
-  
-  // Save back to file
-  file_put_contents($filename, json_encode($existingData, JSON_PRETTY_PRINT));
 
+// 如果状态是'Insert'，检查响应中的ID
+if (($row['Status'] == 'Insert') && isset($parsedResponse['data']['createProduct']['id'])) {
+    $productId = $parsedResponse['data']['createProduct']['id'];
+    $productCode = $row['Product_Code'];
   
+    // 更新数据库中的AwsProductID列
+    $updateStmt = $pdo->prepare("UPDATE products SET AwsProductID = :productId WHERE Product_Code = :productCode");
+    $updateStmt->execute([
+        ':productId' => $productId,
+        ':productCode' => $productCode
+    ]);
   
-  echo $row['Product_Code']. " saved successfully!\n";
-} else {
-  
-}
+    echo $row['Product_Code'] . " saved successfully with ID: " . $productId . "\n";
+} 
+
 }
 
 ?>

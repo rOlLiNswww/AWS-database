@@ -84,10 +84,21 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         echo "cURL Error: $error";
         continue;
     } else {
-        echo $row['Product_Code'] . "'s AddOn is saved successfully\n";
+        $decodedResponse = json_decode($response, true);
+
+            if(isset($decodedResponse['data']['createAddOn']['id'])) {
+                $addOnID = $decodedResponse['data']['createAddOn']['id'];
+
+                // 在数据库中更新 AwsAddOnID
+                $updateSql = 'UPDATE AddOn SET AwsAddOnID = ? WHERE Product_Code = ?';
+                $updateStmt = $pdo->prepare($updateSql);
+                $updateStmt->execute([$addOnID, $row['Product_Code']]);
+                
+                echo $row['Product_Code'] . "'s AddOn with ID " . $addOnID . " is saved successfully\n";
     }
-
+    else {
+        echo "Failed to retrieve AddOn ID from the response\n";
+    }
 }
-
-
+}
 ?>
