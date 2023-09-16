@@ -31,7 +31,7 @@ mutation CreateInventory(
 
 $pdo = new PDO($dsn, $user, $pass);
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-$stmt = $pdo->query('SELECT i.Name, i.Code, i.Colour_Hex, i.On_Hand, i.On_Order, i.Product_Code, i.Incoming, i.Avaliable_Country, i.Supplier_Name, i.Colour_Pms, p.Status as Product_Status 
+$stmt = $pdo->query('SELECT i.Name, i.Code, i.Colour_Hex, i.On_Hand, i.On_Order, i.Product_Code, i.Incoming, i.Avaliable_Country, i.Supplier_Name, i.Colour_Pms, p.Status as Product_Status, p.AwsProductID as ProductID 
                      FROM Inventory i
                      LEFT JOIN Products p ON i.Product_Code = p.Product_Code
 ');
@@ -39,24 +39,6 @@ $stmt = $pdo->query('SELECT i.Name, i.Code, i.Colour_Hex, i.On_Hand, i.On_Order,
 
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
-    $jsonFile = 'product_ids.json';
-    $jsonData = file_get_contents($jsonFile);
-    if ($jsonData === false) {
-        echo '无法读取 JSON 文件';
-    } else {
-        $productData = json_decode($jsonData, true);
-        if ($productData === null) {
-            echo '解码 JSON 数据失败';
-        } else {
-            // 要查找的键
-            $keyToFind = $row['Product_Code'];
-            if (array_key_exists($keyToFind, $productData)) {
-                $foundid = $productData[$keyToFind];
-            } else {
-                // 处理未找到的情况，如果需要的话
-            }
-        }
-    }
     $productStatus = $row['Product_Status'];
     if ($productStatus == 'Insert') {
     $variables = [
@@ -66,7 +48,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         'colour_hex' =>$row['Colour_Hex'],
         'onHand' =>$row['On_Hand'],
         'onOrder' =>$row['On_Order'],
-        'productID' =>$foundid,
+        'productID' =>$row['ProductID'],
         'incoming' =>$row['Incoming'],
         'available_country' =>$row['Avaliable_Country'],
         'supplierID' =>'2d4a265b-de20-40c4-82f7-421253a4ec94',
