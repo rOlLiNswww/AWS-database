@@ -281,10 +281,6 @@ if ($error) {
   continue;
 }
 
-// $updateStatusSQL = "UPDATE Products SET Status = 'Normal' WHERE Product_Code = :productCode";
-// $updateStatusStmt = $pdo->prepare($updateStatusSQL);
-// $updateStatusStmt->bindParam(':productCode', $row['Product_Code']);
-// $updateStatusStmt->execute();
 
 //把id和code放到json
 $parsedResponse = json_decode($response, true);

@@ -98,43 +98,45 @@ foreach ($decorations as $decoration) {
     }
 }
 
-// 使用 PDO 执行 SQL
-//$pdo = new PDO(/* 数据库连接信息 */);
-    foreach ($groupedByNames as $name => $data) {
-        $nzData = isset($data['NZ']) ? $data['NZ'] : array(); // 把这行移到循环的开始
-    
-        if ($Status == "Insert") {
-            $sql = 'INSERT INTO Decoration (Decoration_Name, Imprint_Area, Product_Code, Supplier_Name, Imprint_Type, Avaliable_Country, Services) VALUES (?, ?, ?, ?, ?, ?, ?)';
-            $values = array(
-                $name,
-                $data['Imprint_Area'],
-                $data['Product_Code'],
-                $data['Supplier_Name'],
-                $data['Imprint_Type'],
-                $avaliableCountryJson,
-                json_encode(array('AU' => $data['AU'], 'NZ' => $nzData))
-            );
-        } elseif ($Status == "Updated") {
-            $sql = 'UPDATE Decoration SET Imprint_Area = ?, Supplier_Name = ?, Imprint_Type = ?, Avaliable_Country = ?, Services = ? WHERE Decoration_Name = ? AND Product_Code = ?';
-            $values = array(
-                $data['Imprint_Area'],
-                $data['Supplier_Name'],
-                $data['Imprint_Type'],
-                $avaliableCountryJson,
-                json_encode(array('AU' => $data['AU'], 'NZ' => $nzData)),
-                $name,
-                $data['Product_Code']
-            );
-        } else {
-            // 可能是未知的状态，所以我们终止循环
-            continue;
-        }
-        
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute($values);
+foreach ($groupedByNames as $name => $data) {
+    // 首先检查是否已经存在记录
+    $checkSQL = 'SELECT * FROM Decoration WHERE Decoration_Name = ? AND Product_Code = ?';
+    $stmtCheck = $pdo->prepare($checkSQL);
+    $stmtCheck->execute([$name, $data['Product_Code']]);
+    $exists = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+
+    $nzData = isset($data['NZ']) ? $data['NZ'] : array();
+
+    if (!$exists) {
+        // Insert
+        $sql = 'INSERT INTO Decoration (Decoration_Name, Imprint_Area, Product_Code, Supplier_Name, Imprint_Type, Avaliable_Country, Services) VALUES (?, ?, ?, ?, ?, ?, ?)';
+        $values = array(
+            $name,
+            $data['Imprint_Area'],
+            $data['Product_Code'],
+            $data['Supplier_Name'],
+            $data['Imprint_Type'],
+            $avaliableCountryJson,
+            json_encode(array('AU' => $data['AU'], 'NZ' => $nzData))
+        );
+    } else {
+        // Update
+        $sql = 'UPDATE Decoration SET Imprint_Area = ?, Supplier_Name = ?, Imprint_Type = ?, Avaliable_Country = ?, Services = ? WHERE Decoration_Name = ? AND Product_Code = ?';
+        $values = array(
+            $data['Imprint_Area'],
+            $data['Supplier_Name'],
+            $data['Imprint_Type'],
+            $avaliableCountryJson,
+            json_encode(array('AU' => $data['AU'], 'NZ' => $nzData)),
+            $name,
+            $data['Product_Code']
+        );
     }
-    
-    
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($values);
+}
+
 
 }
 ?>

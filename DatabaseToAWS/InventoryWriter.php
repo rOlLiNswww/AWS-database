@@ -95,9 +95,21 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         echo "cURL Error: $error";
         continue;
     } else {
-        echo $row['Product_Code'] . "'s inventory is saved successfully\n";
-    }
+        $decodedResponse = json_decode($response, true);
+        if (isset($decodedResponse['data']['createInventory']['id'])) {
+            $inventoryId = $decodedResponse['data']['createInventory']['id'];
 
+            // Save the inventoryId into Inventory table
+            $updateStmt = $pdo->prepare("UPDATE Inventory SET AwsInventoryID = :inventoryId WHERE Code = :code");
+            $updateStmt->bindParam(':inventoryId', $inventoryId);
+            $updateStmt->bindParam(':code', $row['Code']);
+            $updateStmt->execute();
+
+            echo $row['Product_Code'] . "'s inventory is saved successfully with ID: $inventoryId\n";
+        } else {
+            echo "Failed to save inventory for " . $row['Product_Code'] . ".\n";
+        }
+    }
 }
 
 

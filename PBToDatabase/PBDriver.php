@@ -34,18 +34,4 @@ if (is_array($jsonDataArray)) {
 }
 
 
-//check delete product
-// $inputProductCodes = [];
-// foreach ($jsonDataArray as $jsonData) {
-//     $inputProductCodes[] = $jsonData['Product_Code'];
-// }
-
-// $dbProductCodes = getAllProductCodesFromDatabase('PB');
-// $codesToDelete = array_diff($dbProductCodes, $inputProductCodes);
-
-// foreach ($codesToDelete as $code) {
-//     echo  $code . " has been delete!\n";
-//     deleteProductByCode($code);
-// }
-
 ?>

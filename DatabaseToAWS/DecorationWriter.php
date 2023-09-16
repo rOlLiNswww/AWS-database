@@ -116,13 +116,24 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     curl_close($ch);
 
     if ($error) {
-        echo "cURL Error: $error";
-        continue;
-    } else {
-        echo $row['Product_Code'] . "'s decoration is saved successfully\n";
-    }
+      echo "cURL Error: $error";
+      continue;
+  } else {
+      $decodedResponse = json_decode($response, true);
+      if (isset($decodedResponse['data']['createDecoration']['id'])) {
+          $decorationId = $decodedResponse['data']['createDecoration']['id'];
 
+          // Save the decorationId into Decoration table
+          $updateStmt = $pdo->prepare("UPDATE Decoration SET AwsDecorationID = :decorationId WHERE Decoration_ID = :decorationID");
+          $updateStmt->bindParam(':decorationId', $decorationId);
+          $updateStmt->bindParam(':decorationID', $row['Decoration_ID']);
+          $updateStmt->execute();
+
+          echo $row['Product_Code'] . "'s decoration is saved successfully with ID: $decorationId\n";
+      } else {
+          echo "Failed to save decoration for " . $row['Product_Code'] . ".\n";
+      }
+  }
 }
-
 
 ?>
