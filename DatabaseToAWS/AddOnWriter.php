@@ -24,9 +24,29 @@ mutation CreateAddOn(
   }
 ';
 
+
+$query2 ='mutation UpdateAddOn(
+    $input: UpdateAddOnInput!
+    $condition: ModelAddOnConditionInput
+  ) {
+    updateAddOn(input: $input, condition: $condition) {
+      id
+      name
+      avaliable_country
+      cost
+      productID
+      supplierID
+      decoration
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+  }';
+
 $pdo = new PDO($dsn, $user, $pass);
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-$stmt = $pdo->query('SELECT a.Name, a.Avaliable_Country, a.Cost, a.Product_Code, a.Supplier_Name, a.Decoration, p.Status as Product_Status,p.AwsProductID as ProductID 
+$stmt = $pdo->query('SELECT a.AwsAddOnID, a.Name, a.Avaliable_Country, a.Cost, a.Product_Code, a.Supplier_Name, a.Decoration, p.Status as Product_Status,p.AwsProductID as ProductID 
                      FROM AddOn a
                      LEFT JOIN Products p ON a.Product_Code = p.Product_Code
 ');
@@ -47,6 +67,19 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         ]
     ];
     $payload = json_encode(['query' => $query, 'variables' => $variables]);
+    }elseif ($productStatus == 'Updated') {
+        $variables2 = [
+            'input' => [
+                'id' => $row['AwsAddOnID'],
+                'name' =>$row['Name'],
+                'productID' =>$row['ProductID'],
+                'avaliable_country' =>$row['Avaliable_Country'],
+                'supplierID' =>'2d4a265b-de20-40c4-82f7-421253a4ec94',
+                'cost'=>$row['Cost'],
+                'decoration'=>$row['Decoration']
+                ]
+            ];
+            $payload = json_encode(['query' => $query2, 'variables' => $variables2]);
     }
     else{
         continue;
